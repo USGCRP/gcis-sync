@@ -1,5 +1,5 @@
 package sync;
-use sync::article;
+use syncer::article;
 use v5.14;
 
 sub new {
@@ -8,6 +8,7 @@ sub new {
     my $gcis =  Gcis::Client->new->use_env;
     $gcis->find_credentials->login;
     $gcis->logger(Mojo::Log->new(path => '/tmp/gcis-sync.log'));
+    $gcis->logger->info("starting");
     bless +{
         gcis => $gcis,
         dry_run => $args{dry_run},
@@ -24,7 +25,7 @@ sub run {
     my $which = $a{which} or return;
     say "gcis url : ".$s->gcis->url;
     for my $which (@$which) {
-        my $class = "sync::$which";
+        my $class = "syncer::$which";
         my $obj = $class->new(gcis => $s->gcis);
         say "syncing $which";
         $obj->sync(

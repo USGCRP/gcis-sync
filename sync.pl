@@ -10,7 +10,6 @@ use Gcis::Client 0.03;
 use sync;
 
 binmode STDOUT, ':encoding(utf8)';
-binmode STDERR, ':encoding(utf8)';
 
 GetOptions(
     'dry_run|n' => \(my $dry_run),
