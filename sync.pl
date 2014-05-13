@@ -6,6 +6,7 @@ use Pod::Usage qw/pod2usage/;
 use v5.14;
 use lib './lib';
 use lib $ENV{HOME}.'/gcis/gcis-pl-client/lib';
+use Gcis::Client 0.03;
 use sync;
 
 binmode STDOUT, ':encoding(utf8)';
