@@ -43,14 +43,19 @@ sub sync {
     my $s = shift;
     $|=1;
     my %a = @_;
+    my $limit = $a{limit};
+    my $dry_run = $a{dry_run};
+
     my $c = $s->{gcis} or die "no client";
-    $c->logger->info("starting sync");
+    $c->logger->info("starting articles");
     my $d = Gcis::Client->new->accept("application/vnd.citationstyles.csl+json;q=0.5")
              ->url("http://dx.doi.org");
     $d->logger($c->logger);
     my @articles = @{ $c->get('/article?all=1') };
     my %stats;
+    my $i = 0;
     for my $art (@articles) { ### Processing===[%]       done
+        last if $limit && $i++ > $limit;
         my $article = $c->get_form($art) or die "could not get form : ".Dumper($art);
         my $doi = $article->{doi} or next;
         my $crossref = $d->get("/$doi") or next;
@@ -65,11 +70,14 @@ sub sync {
                 $stats{year_changed}++;
             }
         }
-        if ($a{dry_run}) {
+        if ($dry_run) {
             say "ready to save http://dx.doi.org/$doi" if $changed;
             next;
         }
-        $c->logger->info("$doi: skip") unless $changed;
+        unless ($changed) {
+            $c->logger->info("$doi: skip");
+            $stats{skip}++;
+        }
         next unless $changed;
         $c->logger->info("$doi: update");
         $c->post( "/article/$article->{identifier}" => $article) or $c->logger->warn($c->error);

@@ -10,5 +10,8 @@ sub sync {
     die "implemented by derived class";
 }
 
+sub stats {
+    shift->{stats};
+}
 
 1;
