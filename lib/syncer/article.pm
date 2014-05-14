@@ -71,7 +71,7 @@ sub sync {
             }
         }
         if ($dry_run) {
-            say "ready to save http://dx.doi.org/$doi" if $changed;
+            $c->logger->info("ready to save http://dx.doi.org/$doi") if $changed;
             next;
         }
         unless ($changed) {
