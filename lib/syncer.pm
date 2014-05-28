@@ -14,4 +14,12 @@ sub stats {
     shift->{stats};
 }
 
+sub gcis {
+    return shift->{gcis};
+}
+
+sub logger {
+    return shift->gcis->logger;
+}
+
 1;

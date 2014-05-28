@@ -32,7 +32,7 @@ sub _set_year {
     my $article = shift;
     my $year = shift;
     return 0 if $article->{year} eq $year;
-    say "year : changing $article->{year} to $year";
+    $s->logger->info("year : changing $article->{year} to $year");
     $article->{year} = $year;
     return 1;
 }
@@ -47,7 +47,7 @@ sub sync {
     my $dry_run = $a{dry_run};
 
     my $c = $s->{gcis} or die "no client";
-    $c->logger->info("starting articles");
+    $s->logger->info("starting articles");
     my $d = Gcis::Client->new->accept("application/vnd.citationstyles.csl+json;q=0.5")
              ->url("http://dx.doi.org");
     $d->logger($c->logger);
@@ -71,16 +71,16 @@ sub sync {
             }
         }
         if ($dry_run) {
-            $c->logger->info("ready to save http://dx.doi.org/$doi") if $changed;
+            $s->logger->info("ready to save http://dx.doi.org/$doi") if $changed;
             next;
         }
         unless ($changed) {
-            $c->logger->info("$doi: skip");
+            $s->logger->info("$doi: skip");
             $stats{skip}++;
         }
         next unless $changed;
-        $c->logger->info("$doi: update");
-        $c->post( "/article/$article->{identifier}" => $article) or $c->logger->warn($c->error);
+        $s->logger->info("$doi: update");
+        $c->post( "/article/$article->{identifier}" => $article) or $s->logger->warn($c->error);
     }
     $s->{stats} = \%stats;
     return;
