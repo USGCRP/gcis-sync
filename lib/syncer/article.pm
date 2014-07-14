@@ -100,7 +100,8 @@ sub sync {
             if ($s->_set_year($article, $crossref->{issued}{'date-parts'}[0][0])) {
                 $changed = 1;
                 $stats{year_changed}++;
-                $how .= " year change";
+                $how .= ", " if $how;
+                $how .= "year change";
             }
         } else {
             warning "No year in crossref";
