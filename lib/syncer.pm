@@ -18,8 +18,14 @@ sub gcis {
     return shift->{gcis};
 }
 
+my $_logger;
 sub logger {
-    return shift->gcis->logger;
+    my $arg = shift;
+    return $_logger unless @_;
+    $_logger = shift;
+    warn "unknown logger" unless $_logger->isa("Mojo::Log");
+    return $_logger;
 }
+
 
 1;
