@@ -91,7 +91,7 @@ sub sync {
             if (my $title_change = $s->_set_title($article, $crossref->{title})) {
                 $changed = 1;
                 $stats{title_change}++;
-                $how = $title_change == 1 ? "typo" : "major title change";
+                $how = $title_change == 1 ? "title touch-up" : "major title change";
             }
         } else {
             warning "no title in crossref for $doi";
