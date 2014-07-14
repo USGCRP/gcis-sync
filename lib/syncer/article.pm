@@ -29,8 +29,8 @@ sub _set_title {
     return 0 if $article->{title} eq $title;
     my $return_value = 1;
     if (very_different($article->{title}, $title)) {
-        say "old title : $article->{title}";
-        say "new title : $title";
+        info "old title : $article->{title}";
+        info "new title : $title";
         $return_value = 2;
     }
     $article->{title} = $title;
