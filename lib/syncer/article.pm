@@ -104,7 +104,7 @@ sub sync {
                 $how .= "year change";
             }
         } else {
-            warning "No year in crossref";
+            warning "No year in crossref for $doi";
         }
         if ($dry_run) {
             if ($changed) {
