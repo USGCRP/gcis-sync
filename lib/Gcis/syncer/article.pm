@@ -1,16 +1,16 @@
-package syncer::article;
+package Gcis::syncer::article;
 
 use Text::Levenshtein qw/distance/;
 use Gcis::Client;
 use Smart::Comments;
 use Data::Dumper;
-use base 'syncer';
+use base 'Gcis::syncer';
 use v5.14;
 
-sub debug($) { syncer->logger->debug(@_); }
-sub info($) { syncer->logger->info(@_); }
-sub error($) { syncer->logger->error(@_); }
-sub warning($) { syncer->logger->warn(@_); }
+sub debug($)   { Gcis::syncer->logger->debug(@_); }
+sub info($)    { Gcis::syncer->logger->info(@_); }
+sub error($)   { Gcis::syncer->logger->error(@_); }
+sub warning($) { Gcis::syncer->logger->warn(@_); }
 
 sub very_different {
     my ($x,$y) = @_;

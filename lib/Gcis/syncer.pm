@@ -1,4 +1,4 @@
-package syncer;
+package Gcis::syncer;
 
 sub new {
     my $s = shift;

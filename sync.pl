@@ -8,7 +8,8 @@ use lib './lib';
 use lib $ENV{HOME}.'/gcis/gcis-pl-client/lib';
 use Gcis::Client 0.03;
 
-use syncer::article;
+use Gcis::syncer::article;
+
 my @syncers = qw/article/;
 
 binmode STDOUT, ':encoding(utf8)';
@@ -20,6 +21,7 @@ GetOptions(
   'log_level=s' => \(my $log_level = "info"),
   'limit=s'    => \(my $limit),
   'gcid=s'     => \(my $gcid),
+  'syncer=s'   => \(my $syncer),
 );
 
 pod2usage(-msg => "missing url", -verbose => 1) unless $url;
@@ -32,13 +34,13 @@ sub main {
     my $logger =  Mojo::Log->new($dry_run ? () : (path => $log_file));
     $logger->level($log_level);
     $gcis->logger($logger);
-    syncer->logger($logger);
+    Gcis::syncer->logger($logger);
     say "url : ".$gcis->url;
     $gcis->logger->info("starting : ".$gcis->url);
     say "log : ".$log_file unless $dry_run;
     my %stats;
     for my $which (@syncers) {
-        my $class = "syncer::$which";
+        my $class = "Gcis::syncer::$which";
         my $obj = $class->new(gcis => $gcis);
         $obj->sync(
             dry_run => $dry_run,
@@ -87,6 +89,10 @@ Limit number of items of each type to sync (default all).
 =item B<--gcid>
 
 Only sync the item with the given GCID.
+
+=item B<--syncer>
+
+Only run the specifed syncer.
 
 =cut
 
