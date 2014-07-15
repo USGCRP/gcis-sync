@@ -5,12 +5,8 @@ use Gcis::Client;
 use Smart::Comments;
 use Data::Dumper;
 use base 'Gcis::syncer';
+use Gcis::syncer::logger;
 use v5.14;
-
-sub debug($)   { Gcis::syncer->logger->debug(@_); }
-sub info($)    { Gcis::syncer->logger->info(@_); }
-sub error($)   { Gcis::syncer->logger->error(@_); }
-sub warning($) { Gcis::syncer->logger->warn(@_); }
 
 sub very_different {
     my ($x,$y) = @_;
@@ -49,17 +45,16 @@ sub _set_year {
 
 #is $article->{journal_vol},    $crossref->{volume}, "volume";
 
+$|=1;
 sub sync {
-    my $s = shift;
-    $|=1;
-    my %a = @_;
-    my $limit = $a{limit};
+    my $s       = shift;
+    my %a       = @_;
+    my $limit   = $a{limit};
     my $dry_run = $a{dry_run};
-    my $gcid = $a{gcid};
+    my $gcid    = $a{gcid};
     return if ($gcid && $gcid !~ /\/article\//);
-
     my $c = $s->{gcis} or die "no client";
-    info "starting articles";
+
     my $d = Gcis::Client->new->accept("application/vnd.citationstyles.csl+json;q=0.5")
              ->url("http://dx.doi.org");
     $d->logger($c->logger);

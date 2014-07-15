@@ -4,13 +4,12 @@ use Getopt::Long qw/GetOptions/;
 use Pod::Usage qw/pod2usage/;
 
 use v5.14;
-use lib './lib';
-use lib $ENV{HOME}.'/gcis/gcis-pl-client/lib';
 use Gcis::Client 0.03;
 
 use Gcis::syncer::article;
+use Gcis::syncer::echo;
 
-my @syncers = qw/article/;
+my @syncers = qw/article echo/;
 
 binmode STDOUT, ':encoding(utf8)';
 
@@ -35,11 +34,13 @@ sub main {
     $logger->level($log_level);
     $gcis->logger($logger);
     Gcis::syncer->logger($logger);
-    say "url : ".$gcis->url;
+    @syncers = ($syncer) if $syncer;
     $gcis->logger->info("starting : ".$gcis->url);
+    say "url : ".$gcis->url;
     say "log : ".$log_file unless $dry_run;
     my %stats;
     for my $which (@syncers) {
+        $gcis->logger->info("syncer : $which");
         my $class = "Gcis::syncer::$which";
         my $obj = $class->new(gcis => $gcis);
         $obj->sync(
