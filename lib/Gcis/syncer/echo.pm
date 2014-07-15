@@ -22,29 +22,29 @@ our $map = {
  lat_min => sub {
     # spatial is : west, south, east, north or : x,y
      for (shift->{spatial}) {
-         /^(.*), (.*), (.*), (.*)$/ and return $1;
-         /^(.*), (.*)$/ and return $1;
+         /^(.*), (.*), (.*), (.*)$/ and return $2;
+         /^(.*), (.*)$/ and return $2;
      }
      return;
  },
  lat_max => sub {
+     for (shift->{spatial}) {
+         /^(.*), (.*), (.*), (.*)$/ and return $4;
+         /^(.*), (.*)$/ and return $2;
+     }
+     return;
+ },
+ lon_min => sub {
      for (shift->{spatial}) {
          /^(.*), (.*), (.*), (.*)$/ and return $3;
          /^(.*), (.*)$/ and return $1;
      }
      return;
  },
- lon_min => sub {
-     for (shift->{spatial}) {
-         /^(.*), (.*), (.*), (.*)$/ and return $2;
-         /^(.*), (.*)$/ and return $2;
-     }
-     return;
- },
  lon_max => sub {
      for (shift->{spatial}) {
-         /^(.*), (.*), (.*), (.*)$/ and return $4;
-         /^(.*), (.*)$/ and return $2;
+         /^(.*), (.*), (.*), (.*)$/ and return $1;
+         /^(.*), (.*)$/ and return $1;
      }
      return;
  },
