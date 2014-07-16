@@ -90,7 +90,7 @@ sub sync {
     my $opendata = $s->_get_opendata();
     my $data = JSON::XS->new->decode($opendata);
     info "echo entries : ".@$data;
-    for my $entry (@$data) {
+    for my $entry (@$data) {  ### Processing===[%]       done
         my %gcis = map { $_ => scalar $map->{$_}->($entry)} keys %$map;
         my $existing = $c->get("/dataset/$gcis{identifier}");
         my $url = $existing ? "/dataset/$gcis{identifier}" : "/dataset";
