@@ -47,7 +47,7 @@ sub sync {
         $more = 0;
         my $tx = $ua->get($url->query([ startIndex => $start_index ]));
         my $res = $tx->success or die $tx->error;
-        for my $entry ($res->dom->find('entry')->each) {
+        for my $entry ($res->dom->find('entry')->each) {  ### Processing===[%]       done
             my %gcis_info = $s->_extract_gcis($entry);
             $more = 1;
             next if $gcid && $gcid ne "/dataset/$gcis_info{identifier}";
