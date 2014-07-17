@@ -8,8 +8,9 @@ use Gcis::Client 0.03;
 
 use Gcis::syncer::article;
 use Gcis::syncer::echo;
+use Gcis::syncer::podaac;
 
-my @syncers = qw/article echo/;
+my @syncers = qw/article echo podaac/;
 
 binmode STDOUT, ':encoding(utf8)';
 

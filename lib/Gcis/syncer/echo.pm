@@ -1,13 +1,11 @@
 package Gcis::syncer::echo;
 use Gcis::Client;
 use base 'Gcis::syncer';
-use Gcis::syncer::logger;
+use Gcis::syncer::util qw/:log iso_date/;
 use Smart::Comments;
 use JSON::XS;
 use Mojo::UserAgent;
 use IO::Uncompress::Unzip qw/unzip $UnzipError/;
-use DateTime;
-use DateTime::Format::ISO8601;
 use Data::Dumper;
 use v5.14;
 
@@ -18,7 +16,7 @@ our $map = {
  description  => sub { my $s = shift; $s->{description}                      },
  native_id    => sub { my $s = shift; $s->{identifier}                       },
  url          => sub { my $s = shift; $s->{accessURL} || $s->{landingPage}   },
- release_dt   => sub { my $s = shift; _fmt_date($s->{issued})                },
+ release_dt   => sub { my $s = shift; iso_date($s->{issued})                },
  lat_min => sub {
     # spatial is : west, south, east, north or : x,y
      for (shift->{spatial}) {
@@ -50,19 +48,15 @@ our $map = {
  },
  start_time => sub {
      shift->{temporal} =~ m[^(.*)/(.*)$] or return;
-     return _fmt_date($1);
+     return iso_date($1);
  },
  end_time => sub {
      shift->{temporal} =~ m[^(.*)/(.*)$] or return;
-     return _fmt_date($2);
+     return iso_date($2);
  },
 };
 
-sub _fmt_date {
-    my $dt = shift or return undef;
-    my $dt = DateTime::Format::ISO8601->parse_datetime($dt) or return undef;
-    return $dt->iso8601();
-}
+
 
 sub _get_opendata {
     my $c = shift;
@@ -83,7 +77,7 @@ sub sync {
     my $limit   = $a{limit};
     my $dry_run = $a{dry_run};
     my $gcid    = $a{gcid};
-    return if ($gcid && $gcid !~ /\/article\//);
+    return if ($gcid && $gcid !~ /^\/dataset\/nasa-echo-/);
     my $c = $s->{gcis} or die "no client";
     my %stats;
 
@@ -92,6 +86,7 @@ sub sync {
     info "echo entries : ".@$data;
     for my $entry (@$data) {  ### Processing===[%]       done
         my %gcis = map { $_ => scalar $map->{$_}->($entry)} keys %$map;
+        next if $gcid && $gcid ne "/dataset/$gcis{identifier}";
         my $existing = $c->get("/dataset/$gcis{identifier}");
         my $url = $existing ? "/dataset/$gcis{identifier}" : "/dataset";
         $stats{ ($existing ? "updated" : "created") }++;
@@ -110,6 +105,6 @@ sub sync {
     return;
 }
 
-return 1;
+1;
 
 

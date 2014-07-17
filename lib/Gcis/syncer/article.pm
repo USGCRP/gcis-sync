@@ -5,7 +5,7 @@ use Gcis::Client;
 use Smart::Comments;
 use Data::Dumper;
 use base 'Gcis::syncer';
-use Gcis::syncer::logger;
+use Gcis::syncer::util qw/:log/;
 use v5.14;
 
 sub very_different {
