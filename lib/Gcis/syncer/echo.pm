@@ -9,102 +9,117 @@ use IO::Uncompress::Unzip qw/unzip $UnzipError/;
 use Data::Dumper;
 use v5.14;
 
-our $src = q[https://cdn.earthdata.nasa.gov/opendata/echo-publisher.opendata.zip];
+our $src = qw[https://api.echo.nasa.gov/catalog-rest/echo_catalog/datasets.echo10];
 our $map = {
- identifier   => sub { my $s = shift; "nasa-echo-".lc($s->{identifier});     },
- name         => sub { my $s = shift; $s->{title}                            },
- description  => sub { my $s = shift; $s->{description}                      },
- native_id    => sub { my $s = shift; $s->{identifier}                       },
- url          => sub { my $s = shift; $s->{accessURL} || $s->{landingPage}   },
- release_dt   => sub { my $s = shift; iso_date($s->{issued})                },
- lat_min => sub {
-    # spatial is : west, south, east, north or : x,y
-     for (shift->{spatial}) {
-         /^(.*), (.*), (.*), (.*)$/ and return $2;
-         /^(.*), (.*)$/ and return $2;
-     }
-     return;
- },
- lat_max => sub {
-     for (shift->{spatial}) {
-         /^(.*), (.*), (.*), (.*)$/ and return $4;
-         /^(.*), (.*)$/ and return $2;
-     }
-     return;
- },
- lon_min => sub {
-     for (shift->{spatial}) {
-         /^(.*), (.*), (.*), (.*)$/ and return $3;
-         /^(.*), (.*)$/ and return $1;
-     }
-     return;
- },
- lon_max => sub {
-     for (shift->{spatial}) {
-         /^(.*), (.*), (.*), (.*)$/ and return $1;
-         /^(.*), (.*)$/ and return $1;
-     }
-     return;
- },
- start_time => sub {
-     shift->{temporal} =~ m[^(.*)/(.*)$] or return;
-     return iso_date($1);
- },
- end_time => sub {
-     shift->{temporal} =~ m[^(.*)/(.*)$] or return;
-     return iso_date($2);
- },
+      identifier  => sub { "nasa-echo-" . (lc shift->attr('echo_dataset_id')); },
+      name        => "collection > datasetid",
+      description => "collection > description",
+      native_id   => "collection > shortname",
+      url         => [
+                       "result > collection > onlineaccessurls > onlineaccessurl > url",
+                       sub { "http://reverb.echo.nasa.gov/reverb?selected=".shift->attr('echo_dataset_id'); }
+                   ],
+      release_dt => "collection > inserttime",
+      lat_min    => "collection > spatial > horizontalspatialdomain > geometry > boundingrectangle > southboundingcoordinate",
+      lat_max    => "collection > spatial > horizontalspatialdomain > geometry > boundingrectangle > northboundingcoordinate",
+      lon_min    => "collection > spatial > horizontalspatialdomain > geometry > boundingrectangle > westboundingcoordinate",
+      lon_max    => "collection > spatial > horizontalspatialdomain > geometry > boundingrectangle > eastboundingcoordinate",
+      start_time => [
+                     "collection > temporal > rangedatetime > beginningdatetime",
+                     "collection > temporal > rangedatetime > singledatetime",
+                    ],
+      end_time   => [
+                     "collection > temporal > rangedatetime > endingdatetime",
+                     "collection > temporal > rangedatetime > singledatetime",
+                    ]
 };
 
-
-
-sub _get_opendata {
-    my $c = shift;
-    my $ua = Mojo::UserAgent->new();
-    our $src;
-    info "getting $src";
-    my $tx = $ua->get($src);
-    my $res = $tx->success or die $tx->error;
-    my $zipped = $res->body;
-    info "unzipping";
-    unzip \$zipped => \(my $unzipped) or die "unzip failed $UnzipError";
-    return $unzipped;
-}
-
 sub sync {
-    my $s       = shift;
-    my %a       = @_;
+    my $s = shift;
+    my %a = @_;
     my $limit   = $a{limit};
     my $dry_run = $a{dry_run};
     my $gcid    = $a{gcid};
-    return if ($gcid && $gcid !~ /^\/dataset\/nasa-echo-/);
     my $c = $s->{gcis} or die "no client";
+    return if ($gcid && $gcid !~ /^\/dataset\/nasa-echo-/);
     my %stats;
 
-    my $opendata = $s->_get_opendata();
-    my $data = JSON::XS->new->decode($opendata);
-    info "echo entries : ".@$data;
-    for my $entry (@$data) {  ### Processing===[%]       done
-        my %gcis = map { $_ => scalar $map->{$_}->($entry)} keys %$map;
-        next if $gcid && $gcid ne "/dataset/$gcis{identifier}";
-        my $existing = $c->get("/dataset/$gcis{identifier}");
-        my $url = $existing ? "/dataset/$gcis{identifier}" : "/dataset";
-        $stats{ ($existing ? "updated" : "created") }++;
-        if ($dry_run) {
-            info "ready to POST to $url";
-            next;
+    my $per_page    = 500;
+    my $more        = 1;
+    my $start_index = 1;
+    my $ua          = Mojo::UserAgent->new();
+    my $url         = Mojo::URL->new($src)->query(page_size => $per_page);
+    my $page        = 1;
+    my $count       = 0;
+
+    REQUEST :
+    while ($more) {
+        $more = 0;
+        my $tx = $ua->get($url->query([ page_num => $page++ ]));
+        my $res = $tx->success or die $tx->error;
+        for my $entry ($res->dom->find('result')->each) {  ### Processing===[%]       done
+            last REQUEST if $limit && $count++ > $limit;
+            my %gcis_info = $s->_extract_gcis($entry);
+            $more = 1;
+            next if $gcid && $gcid ne "/dataset/$gcis_info{identifier}";
+
+            # insert or update
+            my $existing = $c->get("/dataset/$gcis_info{identifier}");
+            my $url = $existing ? "/dataset/$gcis_info{identifier}" : "/dataset";
+            $stats{ ($existing ? "updated" : "created") }++;
+            debug "gcis data : ".Dumper(\%gcis_info);
+            if ($dry_run) {
+                info "ready to POST to $url";
+                next;
+            }
+            # TODO skip if unchanged
+            $c->post($url => \%gcis_info) or do {
+                error $c->error;
+                die "bailing out, error : ".$c->error;
+            };
         }
-        # TODO skip if unchanged
-        debug "sending ".Dumper(\%gcis);
-        $c->post($url => \%gcis) or do {
-            error $c->error;
-            die "bailing out, error : ".$c->error;
-        };
     }
+
     $s->{stats} = \%stats;
     return;
 }
 
-1;
+sub extract {
+    my $e = shift;
+    my $dom = shift;
+
+    ref($e) eq 'CODE' and return $e->($dom);
+    !ref($e) and return $dom->at($e);
+    ref($e) eq 'ARRAY' and do {
+        for (@$e) {
+            my $val = extract($_, $dom);
+            $val = $val->text if ref($val) eq 'Mojo::DOM';
+            return $val if $val;
+        }
+    };
+    return undef;
+}
+
+sub fmt {
+    my ($val,$field) = @_;
+    return $val unless defined $val && length($val);
+    $val = $val->text if ref($val) eq 'Mojo::DOM';
+    return iso_date($val) if $field =~ /_(dt|time)$/;
+    return $val;
+}
+
+sub _extract_gcis {
+    state $count;
+    my $s = shift;
+    my $dom = shift;
+    our $map;
+
+    my %new = map {
+             $_ => fmt(extract($map->{$_}, $dom), $_)
+         } keys %$map;
+    $count++;
+    debug "extracting entry $count : $new{identifier} : $new{native_id}";
+    return %new;
+}
 
 
