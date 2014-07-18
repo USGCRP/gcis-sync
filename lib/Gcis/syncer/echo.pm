@@ -31,7 +31,16 @@ our $map = {
       end_time   => [
                      "collection > temporal > rangedatetime > endingdatetime",
                      "collection > temporal > rangedatetime > singledatetime",
-                    ]
+                    ],
+      doi => sub {
+          my $dom = shift;
+          my $identifier = $dom->at("collection > shortname")->text;
+          $identifier =~ /^doi:(.*)$/ and return $1;
+          for my $url ($dom->find("onlineresource > url")->each) {
+              $url->text =~ m[dx.doi.org/(.*)$] and return $1;
+          }
+          return undef;
+      },
 };
 
 sub sync {
@@ -104,7 +113,7 @@ sub fmt {
     my ($val,$field) = @_;
     return $val unless defined $val && length($val);
     $val = $val->text if ref($val) eq 'Mojo::DOM';
-    return iso_date($val) if $field =~ /_(dt|time)$/;
+    return iso_date($val) if $field && $field =~ /_(dt|time)$/;
     return $val;
 }
 
@@ -117,6 +126,9 @@ sub _extract_gcis {
     my %new = map {
              $_ => fmt(extract($map->{$_}, $dom), $_)
          } keys %$map;
+    debug "platform : ".fmt(extract("platforms > platform > shortname", $dom));
+    debug "Instrument : ".fmt(extract("instrument > shortname", $dom));
+    debug "sensor : ".fmt(extract("sensor > shortname", $dom));
     $count++;
     debug "extracting entry $count : $new{identifier} : $new{native_id}";
     return %new;
