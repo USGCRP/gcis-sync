@@ -1,7 +1,7 @@
 package Gcis::syncer::echo;
 use Gcis::Client;
 use base 'Gcis::syncer';
-use Gcis::syncer::util qw/:log iso_date/;
+use Gcis::syncer::util qw/:log iso_date pretty_id/;
 use Smart::Comments;
 use JSON::XS;
 use Mojo::UserAgent;
@@ -42,7 +42,6 @@ our $map = {
           return undef;
       },
 };
-
 sub sync {
     my $s = shift;
     my %a = @_;
@@ -64,6 +63,7 @@ sub sync {
     REQUEST :
     while ($more) {
         $more = 0;
+        debug "getting $url (page $page)";
         my $tx = $ua->get($url->query([ page_num => $page++ ]));
         my $res = $tx->success or die $tx->error;
         for my $entry ($res->dom->find('result')->each) {  ### Processing===[%]       done
