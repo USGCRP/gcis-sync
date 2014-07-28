@@ -13,7 +13,7 @@ our $meta_src = "http://podaac.jpl.nasa.gov/ws/metadata/dataset/"; # datasetId =
 my $ua  = Mojo::UserAgent->new();
 
 our $map = {
-    identifier  =>  sub { my $dom = shift; "nasa-podaac-".(lc $dom->id->text); },
+    identifier  =>  sub { my $dom = shift; "nasa-".(lc $dom->id->text); },
     name        =>  sub { my $dom = shift; $dom->title->text;         },
     description =>  sub { my $dom = shift; join "\n", $dom->at('content')->text, "short name : ".$dom->shortName->text;  },
     native_id   =>  sub { my $dom = shift; $dom->datasetId->text;     },
