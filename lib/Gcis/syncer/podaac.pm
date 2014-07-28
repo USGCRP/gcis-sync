@@ -92,7 +92,7 @@ sub sync {
             unless ($dry_run) {
                 $c->post($url => \%gcis_info) or do {
                     error $c->error;
-                    die "bailing out, error : ".$c->error;
+                    warn "error : ".$c->error;
                 };
             }
             my $dif = $s->_retrieve_dataset_meta($gcis_info{native_id});
