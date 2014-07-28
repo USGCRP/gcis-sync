@@ -112,7 +112,7 @@ sub _add_instruments {
             $url = $existing->{uri};
         }
         $s->gcis->post($url => { identifier => $instrument });
-        $s->gcis->post("/platform/$platform/instrument", { identifier => $instrument } );
+        #$s->gcis->post("/platform/$platform/instrument", { identifier => $instrument } );
     }
     return $instruments;
 }
