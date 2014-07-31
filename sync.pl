@@ -32,7 +32,7 @@ pod2usage(-msg => "missing url", -verbose => 1) unless $url;
 sub main {
     my $s = shift;
     my $gcis = Gcis::Client->connect(url => $url);
-    my $logger =  Mojo::Log->new($dry_run ? () : (path => $log_file));
+    my $logger =  Mojo::Log->new(($dry_run || $log_file eq '-') ? () : (path => $log_file));
     $logger->level($log_level);
     $gcis->logger($logger);
     Gcis::syncer->logger($logger);
