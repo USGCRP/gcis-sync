@@ -11,7 +11,7 @@ use v5.14;
 our $src = q[http://database.eohandbook.com/database/missiontable.aspx];
 our %params = (
   ddlAgency               => "All",
-  ddlMissionStatus        => "Current",
+  ddlMissionStatus        => "All",
   tbMission               => "",
   ddlLaunchYearFiltertype => "All",
   tbInstruments           => "",
@@ -30,6 +30,7 @@ our %params = (
 
 my $ua  = Mojo::UserAgent->new()->max_redirects(3);
 
+my %all_orgs;
 sub sync {
     my $s = shift;
     my %a       = @_;
@@ -59,22 +60,36 @@ sub sync {
         my %record = mesh @header, @cells;
         my $platform = $s->_add_platform(\%record, $dry_run);
         my $agencies = $s->_add_agencies(\%record, $dry_run);
-        my $instruments = $s->_add_instruments(\%record, $dry_run);
+        #my $instruments = $s->_add_instruments(\%record, $dry_run);
         info "platform $platform";
-        info "   agencies : @$agencies";
-        info "   instrument : @$instruments";
+        # info "   agencies : @$agencies";
+        # info "   instrument : @$instruments";
     }
+    say "all orgs : ".Dumper(\%all_orgs);
 }
+
+my %only_agencies = (
+    'NSO' => 
+);
 
 sub _add_agencies {
     my $s = shift;
     my $ceos = shift;
     my $dry_run = shift;
     debug "agencies : ".$ceos->{'mission-agencies'};
-    my $agencies = [ split ',', $ceos->{'mission-agencies'} ];
+    my $agencies = [ split qr[, ?], $ceos->{'mission-agencies'} ];
+    my $site = $ceos->{'mission-site'};
+    if ($site && length($site) > 1) {
+        $all_orgs{$_}{$site} = 1 for @$agencies;
+    }
+    my $portal = $ceos->{'data-access-portal'};
+    if ($portal && length($portal) > 1) {
+        $all_orgs{$_}{$portal} = 1 for @$agencies;
+    }
+
     $agencies = [ map pretty_id($_), @$agencies ];
     return $agencies if $dry_run;
-    warn "agencies : notyet";
+    warn "TODO, ingest @$agencies";
     return $agencies;
 }
 
@@ -90,10 +105,9 @@ sub _add_platform {
     my $url = "/platform";
     if (my $existing = $s->gcis->get("/platform/$platform{identifier}")) {
         $url = $existing->{uri};
-        debug "updating $url";
+        debug "exists : $url";
     }
-    debug "ceos data : ".Dumper($ceos);
-    debug "gcis platform : ".Dumper(\%platform);
+    #debug "ceos data : ".Dumper($ceos);
     return $platform{identifier} if $dry_run;
     $s->gcis->post($url => \%platform) or die Dumper($s->gcis->error);
     return $platform{identifier};
