@@ -8,7 +8,7 @@ our %EXPORT_TAGS = ( log => [qw/debug info error warning/] );
 sub debug($)   { Gcis::syncer->logger->debug(@_); }
 sub info($)    { Gcis::syncer->logger->info(@_); }
 sub error($)   { Gcis::syncer->logger->error(@_); }
-sub warning($) { Gcis::syncer->logger->warn(@_); }
+sub warning($) { warn "@_"; Gcis::syncer->logger->warn(@_); }
 
 sub iso_date {
     my $dt = shift or return undef;
@@ -18,7 +18,7 @@ sub iso_date {
 
 sub pretty_id {
     my $id = shift or return;
-    $id =~ s[\([^)]+\)][]g;
+    $id =~ s[\(([^)]+\))][$1]g;
     $id = lc $id;
     $id =~ s/ /-/g;
     $id =~ s/\//-/g;

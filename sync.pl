@@ -23,6 +23,7 @@ GetOptions(
   'limit=s'    => \(my $limit),
   'gcid=s'     => \(my $gcid),
   'syncer=s'   => \(my $syncer),
+  'audit_note=s' => \(my $audit_note = "$0 @ARGV\n"),
 );
 
 pod2usage(-msg => "missing url", -verbose => 1) unless $url;
@@ -44,7 +45,7 @@ sub main {
     for my $which (@syncers) {
         $gcis->logger->info("syncer : $which");
         my $class = "Gcis::syncer::$which";
-        my $obj = $class->new(gcis => $gcis);
+        my $obj = $class->new(gcis => $gcis, audit_note => $audit_note);
         $obj->sync(
             dry_run => $dry_run,
             limit => $limit,
@@ -96,6 +97,10 @@ Only sync the item with the given GCID.
 =item B<--syncer>
 
 Only run the specifed syncer.
+
+=item B<--audit_note>
+
+Use this in the audit note (more syncer-dependent details may be appended).
 
 =cut
 

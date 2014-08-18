@@ -18,6 +18,10 @@ sub gcis {
     return shift->{gcis};
 }
 
+sub audit_note {
+    return shift->{audit_note};
+}
+
 my $_logger;
 sub logger {
     my $arg = shift;

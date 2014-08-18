@@ -58,18 +58,18 @@ sub sync {
         my @cells = map $_->text, $row->find('td')->each;
         next unless @cells;
         my %record = mesh @header, @cells;
-        my $platform = $s->_add_platform(\%record, $dry_run);
+        my $platform = $s->_add_platform(\%record, $dry_run) or next;
         my $agencies = $s->_add_agencies(\%record, $dry_run);
-        #my $instruments = $s->_add_instruments(\%record, $dry_run);
+        my $instruments = $s->_add_instruments($platform, \%record, $dry_run);
         info "platform $platform";
+        info "   instrument : @$instruments";
         # info "   agencies : @$agencies";
-        # info "   instrument : @$instruments";
     }
-    say "all orgs : ".Dumper(\%all_orgs);
+    #say "all orgs : ".Dumper(\%all_orgs);
 }
 
 my %only_agencies = (
-    'NSO' => 
+    'NSO' => 1,
 );
 
 sub _add_agencies {
@@ -89,14 +89,22 @@ sub _add_agencies {
 
     $agencies = [ map pretty_id($_), @$agencies ];
     return $agencies if $dry_run;
-    warn "TODO, ingest @$agencies";
+    info "TODO, agencies @$agencies";
     return $agencies;
 }
 
 sub _add_platform {
     my $s = shift;
+    state %seen;
     my $ceos = shift;
     my $dry_run = shift;
+    debug "ceos data : ".Dumper($ceos);
+    if ($ceos->{'mission-status'} =~ /N\/A/) {
+        info "skipping ".$ceos->{'mission-name-short'};
+        return;
+    }
+    my $id = pretty_id($ceos->{'mission-name-short'});
+    die "duplicate id $id" if $seen{$id}++;
     my %platform = (
       identifier => pretty_id($ceos->{'mission-name-short'}),
       name       => $ceos->{'mission-name-full'},
@@ -107,14 +115,23 @@ sub _add_platform {
         $url = $existing->{uri};
         debug "exists : $url";
     }
-    #debug "ceos data : ".Dumper($ceos);
     return $platform{identifier} if $dry_run;
-    $s->gcis->post($url => \%platform) or die Dumper($s->gcis->error);
+    $platform{audit_note} = $s->audit_note;
+    $s->gcis->post($url => \%platform) or do {
+        warning "Error posting to $url : ".$s->gcis->error;
+        warn $s->gcis->tx->res->to_string;
+        return $platform{identifier};
+    };
     return $platform{identifier};
+}
+
+sub audit_note {
+    return join "\n",shift->SUPER::audit_note, $src;
 }
 
 sub _add_instruments {
     my $s = shift;
+    my $platform = shift;
     my $ceos = shift;
     my $dry_run = shift;
     my $instruments = [ split /,/, $ceos->{'instruments'} ];
@@ -122,11 +139,11 @@ sub _add_instruments {
     return $instruments if $dry_run;
     for my $instrument (@$instruments) {
         my $url = "/instrument";
-        if (my $existing = $s->gcis->get("/instrument/$instruments")) {
+        if (my $existing = $s->gcis->get("/instrument/$instrument")) {
             $url = $existing->{uri};
         }
         $s->gcis->post($url => { identifier => $instrument });
-        #$s->gcis->post("/platform/$platform/instrument", { identifier => $instrument } );
+        $s->gcis->post("/platform/rel/$platform", { add => { instrument_identifier => $instrument } } );
     }
     return $instruments;
 }
