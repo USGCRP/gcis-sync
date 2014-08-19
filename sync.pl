@@ -6,6 +6,8 @@ use Pod::Usage qw/pod2usage/;
 use v5.14;
 use Gcis::Client 0.03;
 
+use FindBin;
+use lib "$FindBin::Bin/lib";
 use Gcis::syncer::article;
 use Gcis::syncer::echo;
 use Gcis::syncer::podaac;
