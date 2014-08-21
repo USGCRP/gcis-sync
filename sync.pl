@@ -12,6 +12,7 @@ use Gcis::syncer::article;
 use Gcis::syncer::echo;
 use Gcis::syncer::podaac;
 use Gcis::syncer::ceos;
+use Gcis::syncer::yaml;
 
 my @syncers = qw/article echo podaac ceos/;
 

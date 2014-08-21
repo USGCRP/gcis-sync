@@ -1,0 +1,28 @@
+---
+create : /dataset
+gcid : /dataset/nasa-podaac-integrated-multi-mission-ocean-altimeter-data-for-climate-research
+record :
+    identifier : nasa-podaac-integrated-multi-mission-ocean-altimeter-data-for-climate-research
+    url        : http://podaac.jpl.nasa.gov/Integrated_Multi-Mission_Ocean_AltimeterData
+    name       : Integrated Multi-Mission Ocean Altimeter Data for Climate Research
+    description : >
+        The objective for creating the Integrated Multi-Mission Ocean Altimeter
+        Data for Climate Research is to develop a coherent and consistent time
+        series of Sea Surface Height (SSH) from multi-mission altimeter data
+        that meets the most stringent accuracy requirements demanded to provide
+        credible mean sea level estimates for climate research.  The development
+        of the SSH Climate Data Record (CDR) is a collaborative effort under the
+        auspices of the NASA MEaSURE’s program from NASA/GSFC, JPL, University
+        of South Florida, University of Colorado, and the NOAA Laboratory for
+        Satellite Altimetry.
+prov :
+    uri : /dataset/prov/nasa-podaac-integrated-multi-mission-ocean-altimeter-data-for-climate-research
+    entries :
+    - rel    : prov:wasDerivedFrom
+      parent : /lexicon/podaac/find/dataset/MERGED_TP_J1_OSTM_OST_CYCLES_V2
+    - rel    : prov:wasDerivedFrom
+      parent : /lexicon/podaac/find/dataset/MERGED_TP_J1_OSTM_OST_ALL_V2
+    - rel    : prov:wasDerivedFrom
+      parent : /lexicon/podaac/find/dataset/MERGED_TP_J1_OSTM_OST_GMSL_ASCII_V2
+
+
