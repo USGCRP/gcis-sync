@@ -24,7 +24,7 @@ GetOptions(
   'log_level=s' => \(my $log_level = "info"),
   'limit=s'    => \(my $limit),
   'gcid=s'     => \(my $gcid),
-  'syncer=s'   => \(my $syncer),
+  'syncers=s'   => \(my $syncer),
   'audit_note=s' => \(my $audit_note = "$0 @ARGV\n"),
 );
 
@@ -39,7 +39,7 @@ sub main {
     $logger->level($log_level);
     $gcis->logger($logger);
     Gcis::syncer->logger($logger);
-    @syncers = ($syncer) if $syncer;
+    @syncers = split /,/, $syncer if $syncer;
     $gcis->logger->info("starting : ".$gcis->url);
     say "url : ".$gcis->url;
     say "log : ".$log_file unless $dry_run;
@@ -96,9 +96,9 @@ Limit number of items of each type to sync (default all).
 
 Only sync the item with the given GCID.
 
-=item B<--syncer>
+=item B<--syncers>
 
-Only run the specifed syncer.
+A comma-separated list of syncers to run.
 
 =item B<--audit_note>
 
