@@ -71,8 +71,8 @@ instruments :
         instrument_designer :
             - /organization/jet-propulsion-laboratory
 
-# The next three instruments have PODAAC identifiers.  The above don't; they
-# do not produce archivable data.
+    # The next three instruments have PODAAC identifiers.  The above don't; they
+    # do not produce archivable data.
     poseidon-1 :
         exterms :
             - /ceos/Instrument/POSEIDON-1 (SSALT-1)
