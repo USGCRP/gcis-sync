@@ -24,6 +24,10 @@ record :
 files :
     location : https://eoportal.org/documents/163813/212645/TOPEX_Auto8
     landing_page : https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
+contributors :
+    funding_agency :
+        - /organization/national-aeronautics-space-administration
+        - /organization/centre-national-d-etudes-spatiales
 
 # Instrument names come from CEOS (using the CEOS identifier)
 # Instrument descriptions come from eoportal or gcmd
@@ -44,6 +48,9 @@ instruments :
             located at CNES.
         description_attribution :
             https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
+    contributors :
+        funding_agency :
+            - /organization/centre-national-d-etudes-spatiales
 
     laser-retroreflector-array :
         exterms : /ceos/Instrument/LRA
@@ -60,6 +67,9 @@ instruments :
         files :
             location : https://eoportal.org/documents/163813/212645/TOPEX_Auto1
             landing_page : https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
+    contributors :
+        instrument_designer :
+            - /organization/jet-propulsion-laboratory
 
 # The next three instruments have PODAAC identifiers.  The above don't; they
 # do not produce archivable data.
@@ -82,6 +92,9 @@ instruments :
         files :
             location : https://eoportal.org/documents/163813/212645/TOPEX_Auto2
             landing_page : https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
+    contributors :
+        funding_agency :
+            - /organization/centre-national-d-etudes-spatiales
 
     topex-microwave-radiometer :
         exterms :
@@ -102,6 +115,9 @@ instruments :
             more advanced version of TMR.
         description_attribution : >
             http://gcmdservices.gsfc.nasa.gov/static/kms/concept/c1a69b2c-52ff-4eb3-8e29-f1aaf5c0733c
+        contributors :
+            instrument_designer :
+                - /organization/jet-propulsion-laboratory
 
     topex-nasa-radar-altimeter :
         exterms :
@@ -114,4 +130,9 @@ instruments :
             and surface wind speed.
         description_attribution : >
             https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
+        contributors :
+            instrument_designer :
+                - /organization/johns-hopkins-university-applied-physics-laboratory
+            project_manager :
+                - /organization/goddard-space-flight-center
 
