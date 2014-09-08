@@ -121,6 +121,27 @@ sub _ingest_contributors {
     return 1;
 }
 
+
+#exterms :
+#    - /podaac/Platform/TOPEX/POSIDEON
+#    - /ceos/Mission/Topex-Poseidon
+#    - /gcmd/platform/e5eb6afb-5d3e-4767-ad08-5293c5b2d88b
+sub _ingest_exterms {
+    my $s = shift;
+    my $gcid = shift;
+    my $exterms = shift or return;
+    for my $exterm (@$exterms) {
+        debug "mapping $exterm to $gcid";
+        my ($lexicon,$context,$term) = $exterm =~ m[^/([^/]+)     # lexicon
+                                                     /([^/]+)     # context
+                                                     /(.*)        # term
+                                                     $]x or error "bad exterm $exterm";
+        $s->gcis->post("/lexicon/$lexicon/term/new" => {
+                term => $term, context => $context, gcid => $gcid
+            });
+    }
+}
+
 sub _ingest_file {
     my $s         = shift;
     my $file      = shift;
@@ -136,6 +157,7 @@ sub _ingest_file {
     $s->_ingest_prov($gcid => $data->{prov});
     $s->_ingest_files($gcid => $data->{files});
     $s->_ingest_contributors($gcid => $data->{contributors});
+    $s->_ingest_exterms($gcid => $data->{exterms});
     # TODO the same for instruments if this is a /platform
 }
 
