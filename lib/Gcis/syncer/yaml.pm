@@ -105,7 +105,20 @@ sub _ingest_contributors {
     my $s = shift;
     my $gcid = shift;
     my $contributors = shift or return;
-
+    my $dest = $gcid;
+    $dest =~ s[/([^/]+)$][/contributors/$1] or die "cannot form contributors URL from GCID $gcid";
+    for my $role (keys %$contributors) {
+        for my $uri (@{ $contributors->{$role} }) {
+            $uri =~ m[/organization/(.*)$] or die "only /organization contributors so far";
+            my $organization_identifier = $1;
+            debug "adding $role $organization_identifier";
+            $s->gcis->post( $dest => {
+                organization_identifier => $organization_identifier,
+                role                    => $role
+              }) or error ($s->gcis->error // "failed to add $organization_identifier");
+        }
+    }
+    return 1;
 }
 
 sub _ingest_file {
