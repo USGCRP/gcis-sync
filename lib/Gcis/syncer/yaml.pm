@@ -76,8 +76,13 @@ sub _ingest_prov {
         my $parent = $entry->{parent};
         if ($parent =~ m[^/lexicon]) {
             $s->gcis->ua->max_redirects(0);
-            $parent = $s->gcis->get($parent)->{gcid};
+            my $res = $s->gcis->get($parent);
             $s->gcis->ua->max_redirects(5);
+            unless ($res) {
+                error "Cannot resolve $parent";
+                next;
+            }
+            $parent = $res->{gcid};
         }
         die "missing rel" unless $entry->{rel};
         $s->gcis->post( $prov->{uri}, {
@@ -160,7 +165,9 @@ sub _sync_extra {
 
     my $class = join '::', ref $s, $dir;
     eval "use $class";
-    return if $@ && $@ =~ m[Can't find.*$class.pm];
+    my $path = $class;
+    $path =~ s[::][/]g;
+    return if $@ && $@ =~ m[Can't locate $path.pm];
     die $@ if $@;
     for my $k (keys %$data) {
         next if $base_handles{$k};
@@ -173,11 +180,11 @@ sub _sync_extra {
 sub _ingest_file {
     my $s         = shift;
     my $file      = shift;
-    my $only_gcid = shift;
+    my $gcid_regex = shift;
     my $dry_run   = shift;
     my $data = Load(scalar $file->slurp);
     my $gcid = $data->{gcid} or return error "missing gcid in $file";
-    return if $only_gcid && $gcid ne $only_gcid;
+    return if $gcid_regex && $gcid !~ /$gcid_regex/;
     return if $dry_run;
     debug "file : ".$file->basename;
     debug "gcid : ".$gcid;

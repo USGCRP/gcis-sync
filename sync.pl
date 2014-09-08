@@ -24,7 +24,7 @@ GetOptions(
   'log_file=s' => \(my $log_file = '/tmp/gcis-sync.log'),
   'log_level=s' => \(my $log_level = "info"),
   'limit=s'    => \(my $limit),
-  'gcid=s'     => \(my $gcid),
+  'gcid=s'      => \(my $gcid),
   'syncers=s'   => \(my $syncer),
   'audit_note=s' => \(my $audit_note = "$0 @ARGV\n"),
 );
@@ -95,7 +95,7 @@ Limit number of items of each type to sync (default all).
 
 =item B<--gcid>
 
-Only sync the item with the given GCID.
+Only sync the items matching the given GCID regex.
 
 =item B<--syncers>
 
