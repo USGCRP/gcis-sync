@@ -22,7 +22,7 @@ record :
     description_attribution : >
         https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
 files :
-    location : https://eoportal.org/documents/163813/212645/TOPEX_Auto8
+    location : https://eoportal.org/documents/163813/212645/TOPEX_Auto0
     landing_page : https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
 contributors :
     funding_agency :
