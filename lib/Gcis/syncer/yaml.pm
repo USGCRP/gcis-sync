@@ -11,6 +11,16 @@ use Path::Class qw/file dir/;
 use FindBin;
 use v5.14;
 
+# Base sync class takes care of these yaml keys :
+my %base_handles = (
+  create       => 1,
+  gcid         => 1,
+  exterms      => 1,
+  record       => 1,
+  files        => 1,
+  contributors => 1,
+);
+
 sub sync {
     my $s = shift;
     my %a = @_;
@@ -130,6 +140,7 @@ sub _ingest_exterms {
     my $s = shift;
     my $gcid = shift;
     my $exterms = shift or return;
+    $exterms = [ $exterms ] unless ref $exterms eq 'ARRAY';
     for my $exterm (@$exterms) {
         debug "mapping $exterm to $gcid";
         my ($lexicon,$context,$term) = $exterm =~ m[^/([^/]+)     # lexicon
@@ -139,6 +150,23 @@ sub _ingest_exterms {
         $s->gcis->post("/lexicon/$lexicon/term/new" => {
                 term => $term, context => $context, gcid => $gcid
             });
+    }
+}
+
+sub _sync_extra {
+    my $s = shift;
+    my %a = @_;
+    my ($gcid,$data,$dir) = @a{qw/gcid data dir/};
+
+    my $class = join '::', ref $s, $dir;
+    eval "use $class";
+    return if $@ && $@ =~ m[Can't find.*$class.pm];
+    die $@ if $@;
+    for my $k (keys %$data) {
+        next if $base_handles{$k};
+        my $method = join '::', $class, $k;
+        debug "syncing $k (using $class)";
+        $s->$method($gcid => $data->{$k});
     }
 }
 
@@ -158,8 +186,9 @@ sub _ingest_file {
     $s->_ingest_files($gcid => $data->{files});
     $s->_ingest_contributors($gcid => $data->{contributors});
     $s->_ingest_exterms($gcid => $data->{exterms});
-    # TODO the same for instruments if this is a /platform
+    $s->_sync_extra(gcid => $gcid,data => $data, dir => $file->dir->basename);
 }
+
 
 1;
 
