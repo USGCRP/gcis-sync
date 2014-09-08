@@ -1,13 +1,11 @@
 ---
 create : /platform
 gcid : /platform/topex-poseidon
-exterms :
-    - /podaac/Platform/TOPEX/POSIDEON
-    - /ceos/Mission/Topex-Poseidon
-    - /gcmd/platform/e5eb6afb-5d3e-4767-ad08-5293c5b2d88b
 record :
     identifier : topex-poseidon
     name : Topex/Poseidon
+    start_date : 1992-08-10
+    end_date : 2006-01-18
     description : >
          TOPEX/Poseidon (or simply T/P) is a cooperative Earth observation mission
          of the USA and France (NASA/JPL and CNES as partners) with the overall
@@ -28,111 +26,124 @@ contributors :
     funding_agency :
         - /organization/national-aeronautics-space-administration
         - /organization/centre-national-d-etudes-spatiales
+exterms :
+    - /podaac/Platform/TOPEX/POSIDEON
+    - /ceos/Mission/Topex-Poseidon
+    - /gcmd/platform/e5eb6afb-5d3e-4767-ad08-5293c5b2d88b
 
 # Instrument names come from CEOS (using the CEOS identifier)
 # Instrument descriptions come from eoportal or gcmd
 instruments :
-    doris :
-        exterms : /ceos/Instrument/DORIS
-        name : Doppler Orbitography and Radiopositioning Integrated by Satellite
-        description : >
-            The DORIS tracking system is a new development by the French organizations:
-            CNES (Centre National D'Etudes Spatiales), GRGS (Groupe de Recherches de
-            Géodésie Spatiale), and IGN (Institut Géographique National). DORIS is a
-            one-way microwave tracking system for the determination of precise orbits
-            (3-10 cm radial distance and 0.3 mm/s in range rate accuracy). The
-            concept is based on a ground segment (of globally positioned tracking
-            stations) and a space segment (i.e. DORIS as a passenger payload in a
-            satellite consisting of a receiver, an ultra-stable oscillator, and an
-            antenna). There is also a control center as part of the ground segment,
-            located at CNES.
-        description_attribution :
-            https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
-    contributors :
-        funding_agency :
+    - record :
+            identifier : doris
+            name : Doppler Orbitography and Radiopositioning Integrated by Satellite
+            description : >
+                DORIS (Doppler Orbitography and Radiopositioning Integrated by
+                Satellite) is a Doppler satellite tracking system developed
+                for precise orbit determination and precise ground location.
+            description_attribution : >
+                http://ids-doris.org
+      contributors :
+         funding_agency :
             - /organization/centre-national-d-etudes-spatiales
+      files :
+            location : https://sealevel.jpl.nasa.gov/images/ostm/jason1-doris-th1.gif
+            landing_page : https://sealevel.jpl.nasa.gov/technology/technologyinstrumentdescription/instrumentdescriptiondoris/
+      exterms : /ceos/Instrument/DORIS
 
-    laser-retroreflector-array :
-        exterms : /ceos/Instrument/LRA
-        name : Laser Reflector Array
-        description : >
-            This passive sensor of JPL is used by a ground laser network (of 10-15
-            SLR stations) to track the position of the satellite for precision orbit
-            determination (verification of altitude measurements). The mass of LRA
-            is 29 kg; the LRA accuracy depends on laser station characteristics. The
-            LRA is used to calibrate the other location systems on the satellite
-            (DORIS, GPSDR) with a very high degree of precision.
-        description_attribution : >
-            https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
-        files :
+    - record :
+            identifier : laser-retroreflector-array
+            name : Laser Reflector Array
+            description : >
+                This passive sensor of JPL is used by a ground laser network (of 10-15
+                SLR stations) to track the position of the satellite for precision orbit
+                determination (verification of altitude measurements). The mass of LRA
+                is 29 kg; the LRA accuracy depends on laser station characteristics. The
+                LRA is used to calibrate the other location systems on the satellite
+                (DORIS, GPSDR) with a very high degree of precision.
+            description_attribution : >
+                https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
+      files :
             location : https://eoportal.org/documents/163813/212645/TOPEX_Auto1
             landing_page : https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
-    contributors :
-        instrument_designer :
-            - /organization/jet-propulsion-laboratory
+      contributors :
+            engineer :
+                - /organization/jet-propulsion-laboratory
+      exterms : /ceos/Instrument/LRA
 
     # The next three instruments have PODAAC identifiers.  The above don't; they
     # do not produce archivable data.
-    poseidon-1 :
-        exterms :
-            - /ceos/Instrument/POSEIDON-1 (SSALT-1)
-            - /podaac/Sensor/POSEIDON ALTIMETER
-        name : >
-            Positioning Ocean Solid Earth Ice Dynamics Orbiting Navigator
-            (Single frequency solid state radar altimeter)
-        description : >
-            SSALT is also referred to as Poseidon-1. The single instrument frequency
-            is 13.65 GHz (Ku-band). SSALT is an experimental altimeter (of CNES,
-            built by Alcatel Alenia Space, formerly Alcatel Espace, Toulouse) to
-            demonstrate the concept of low-power, low-mass, low data rate (1/7 the
-            rate of NRA due to extensive on-board processing) and low-cost altimeter
-            for future Earth observing missions.
-        description_attribution : >
-            https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
-        files :
+    - record :
+           identifier : poseidon-1
+           name : >
+               Positioning Ocean Solid Earth Ice Dynamics Orbiting Navigator
+               (Single frequency solid state radar altimeter)
+           description : >
+               SSALT is also referred to as Poseidon-1. The single instrument frequency
+               is 13.65 GHz (Ku-band). SSALT is an experimental altimeter (of CNES,
+               built by Alcatel Alenia Space, formerly Alcatel Espace, Toulouse) to
+               demonstrate the concept of low-power, low-mass, low data rate (1/7 the
+               rate of NRA due to extensive on-board processing) and low-cost altimeter
+               for future Earth observing missions.
+           description_attribution : >
+               https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
+      files :
             location : https://eoportal.org/documents/163813/212645/TOPEX_Auto2
             landing_page : https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
-    contributors :
-        funding_agency :
-            - /organization/centre-national-d-etudes-spatiales
+      contributors :
+            funding_agency :
+                - /organization/centre-national-d-etudes-spatiales
+      exterms :
+            - /ceos/Instrument/POSEIDON-1 (SSALT-1)
+            - /podaac/Sensor/POSEIDON ALTIMETER
 
-    topex-microwave-radiometer :
-        exterms :
+    - record :
+            identifier : topex-microwave-radiometer
+            name : TOPEX Microwave Radiometer
+            description : >
+                The TOPEX/Poseidon microwave radiometer was a three-frequency sensor
+                used to estimate the atmospheric water vapor content in the nadir column
+                through which the altimeter signal is traveling. Since water vapor
+                distorts the altimeter's reading, the water vapor content is measured to
+                correct the altimetry measurement. The sensor uses one frequency to make
+                the measurement, and two frequencies to remove the effects of wind speed
+                and cloud cover. There is a backup receiver for the measurement frequency.
+            description_attribution : 
+                https://sealevel.jpl.nasa.gov/technology/technologyinstrumentdescription/instrumentdescriptionradiometer/
+      contributors :
+            engineer :
+                - /organization/jet-propulsion-laboratory
+      files :
+            location : https://sealevel.jpl.nasa.gov/images/ostm/tp-radiometer-th1.gif
+            landing_page : https://sealevel.jpl.nasa.gov/technology/technologyinstrumentdescription/instrumentdescriptionradiometer/
+      exterms :
             - /ceos/Instrument/TMR
             - /podaac/Sensor/TOPEX MICROWAVE RADIOMETER        
             - /gcmd/instrument/c1a69b2c-52ff-4eb3-8e29-f1aaf5c0733c
-        name : TOPEX Microwave Radiometer
-        description : >
-            The TOPEX/Poseidon Microwave Radiometer (TMR) was
-            a three-frequency microwave radiometer flown on the
-            TOPEX/Poseidon satellite in low Earth orbit that provided
-            total water vapor along the path viewed by the altimeter and
-            was used for range correction. It measured the brightness
-            temperature in the nadir-column at 18, 21, and 37 GHz. The TMR
-            monitors and corrects for the propagation path delay of the
-            altimeter radar signal due to water vapor and nonprecipitating
-            liquid water in the atmosphere. JMR on Jason is a slightly
-            more advanced version of TMR.
-        description_attribution : >
-            http://gcmdservices.gsfc.nasa.gov/static/kms/concept/c1a69b2c-52ff-4eb3-8e29-f1aaf5c0733c
-        contributors :
-            instrument_designer :
-                - /organization/jet-propulsion-laboratory
 
-    topex-nasa-radar-altimeter :
-        exterms :
+    - record :
+            identifier : topex-nasa-radar-altimeter
+            name : TOPEX NASA Radar Altimeter
+            description : >
+                The dual-frequency NASA radar altimeter, NRA, was the
+                primary instrument aboard the spacecraft. It worked by
+                sending radio pulses at 13.6 GHz and 5.3 GHz toward the
+                earth and measuring the characteristics of the echo. By
+                combining this measurement with data from the microwave
+                radiometer and with other information from the spacecraft
+                and the ground, scientists were able to calculate the
+                height of the sea surface to within 4.3 centimeters.
+            description_attribution : >
+                https://sealevel.jpl.nasa.gov/technology/technologyinstrumentdescription/instrumentdescriptaltimeter/
+      files :
+            location : https://sealevel.jpl.nasa.gov/images/ostm/tp-altimeter-th2.gif
+            landing_page : https://sealevel.jpl.nasa.gov/technology/technologyinstrumentdescription/instrumentdescriptaltimeter/
+      contributors :
+            engineer :
+                - /organization/johns-hopkins-university-applied-physics-laboratory
+            manager :
+                - /organization/goddard-space-flight-center
+      exterms :
             - /ceos/Instrument/TOPEX
             - /podaac/Sensor/TOPEX ALTIMETER
-        name : TOPEX NASA Radar Altimeter
-        description : >
-            NRA was designed and built by JHU/APL, and managed by GSFC. It is the
-            prime sensor for the measurement of sea surface heights, wave heights,
-            and surface wind speed.
-        description_attribution : >
-            https://eoportal.org/web/eoportal/satellite-missions/t/topex-poseidon
-        contributors :
-            instrument_designer :
-                - /organization/johns-hopkins-university-applied-physics-laboratory
-            project_manager :
-                - /organization/goddard-space-flight-center
 
