@@ -7,7 +7,7 @@ our %EXPORT_TAGS = ( log => [qw/debug info error warning/] );
 
 sub debug($)   { Gcis::syncer->logger->debug(@_); }
 sub info($)    { Gcis::syncer->logger->info(@_); }
-sub error($)   { Gcis::syncer->logger->error(@_); }
+sub error($)   { Gcis::syncer->logger->error(@_); return 0; }
 sub warning($) { warn "@_"; Gcis::syncer->logger->warn(@_); }
 
 sub iso_date {
