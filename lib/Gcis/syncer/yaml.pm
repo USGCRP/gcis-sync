@@ -152,6 +152,7 @@ sub _ingest_exterms {
                                                      /([^/]+)     # context
                                                      /(.*)        # term
                                                      $]x or error "bad exterm $exterm";
+        info "adding term '$term', context '$context' -> $gcid";
         $s->gcis->post("/lexicon/$lexicon/term/new" => {
                 term => $term, context => $context, gcid => $gcid
             });

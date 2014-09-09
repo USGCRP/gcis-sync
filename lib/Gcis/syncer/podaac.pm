@@ -15,7 +15,7 @@ our $meta_src = Mojo::URL->new("http://podaac.jpl.nasa.gov/ws/search/dataset/")
 my $ua  = Mojo::UserAgent->new();
 
 our $map = {
-    identifier  =>  sub { my $dom = shift; my $id = lc $dom->id->text; 
+    identifier  =>  sub { my $dom = shift; my $id = lc $dom->shortName->text; 
                           return "nasa-podaac-$id" unless $id =~ /^podaac/;
                           return "nasa-$id";
                         },
@@ -41,9 +41,8 @@ sub sync {
     my %a = @_;
     my $limit   = $a{limit};
     my $dry_run = $a{dry_run};
-    my $gcid    = $a{gcid};
+    my $gcid_regex = $a{gcid};
     my $c       = $s->{gcis} or die "no client";
-    return if ($gcid && $gcid !~ /^\/dataset\/nasa-podaac-/);
     my %stats;
 
     my $per_page    = 400;
@@ -64,22 +63,26 @@ sub sync {
 
             # Store mappings to both shortName and id
             my $dataset_gcid = $s->lookup_or_create_gcid(
-                lexicon => 'podaac', context => 'dataset', term => $gcis_info{native_id},
-                gcid => "/dataset/$gcis_info{identifier}", dry_run => $dry_run,
+                  lexicon   => 'podaac',
+                  context => 'dataset',
+                  term    => $gcis_info{native_id},
+                  gcid    => "/dataset/$gcis_info{identifier}",
+                  dry_run => $dry_run,
+                  restrict => $gcid_regex,
             );
+            next if $gcid_regex && $dataset_gcid !~ /$gcid_regex/;
             my $alternate_id = $entry->id->text;
             $s->lookup_or_create_gcid(
                 lexicon => 'podaac', context => 'datasetId', term => $alternate_id,
                 gcid => $dataset_gcid, dry_run => $dry_run,
             );
 
-            next if $gcid && $gcid ne $dataset_gcid;
             debug "entry #$count : $dataset_gcid";
             $count++;
 
             # insert or update
             my $existing = $c->get($dataset_gcid);
-            my $url;
+            my $url = $dataset_gcid;
             $url = "/dataset" unless $existing;
             $stats{ ($existing ? "updated" : "created") }++;
             # TODO skip if unchanged
@@ -120,7 +123,7 @@ sub _extract_gcis {
     our $map;
 
     my %new = map { $_ => $map->{$_}->( $dom ) } keys %$map;
-    debug "extracting $new{identifier} : $new{native_id}";
+    # debug "extracting $new{identifier} : $new{native_id}";
     return %new;
 }
 
@@ -138,15 +141,37 @@ sub _assign_instrument_instances {
     });
   for my $source (@sources) {
       debug "Dataset $gcis->{identifier} : $source->{platform} $source->{instrument}";
-      my ($platform_identifier, $instrument_identifier) = map lc, @$source{qw/platform instrument/};
-      # TODO: use lexicons
-      my $instance = $s->gcis->get("/platform/$platform_identifier/instrument/$instrument_identifier") or do {
-          info "Did not find /platform/$platform_identifier/instrument/$instrument_identifier";
+
+      my ($platform_gcid, $instrument_gcid);
+      if (my $found = $s->gcis->get("/lexicon/podaac/find/Sensor/$source->{instrument}")) {
+          info "Lookup succeeded, got ".$found->{uri};
+          $instrument_gcid = $found->{uri};
+      } else {
+          error "could not find instrument $source->{instrument}";
+          next;
+      }
+      if (my $found = $s->gcis->get("/lexicon/podaac/find/Platform/$source->{platform}")) {
+          info "Lookup succeeded, got ".$found->{uri};
+          $platform_gcid = $found->{uri};
+      } else {
+          debug "tried to get /lexicon/podaac/find/Platform/$source->{platform}";
+          error "could not find platform $source->{platform}";
+          next;
+      }
+
+      #$platform_gcid //= "/platform/".(lc $source->{platform});
+      #$instrument_gcid //= "/instrument/".(lc $source->{instrument});
+      my $instrument_instance = $platform_gcid . $instrument_gcid;
+
+      my $instance = $s->gcis->get($instrument_instance) or do {
+          info "Did not find $instrument_instance";
           next;
       };
 
       next if $dry_run;
       info "Assigning instrument and platform";
+      my ($platform_identifier) = $platform_gcid =~ m[/platform/(.*)$];
+      my ($instrument_identifier) = $instrument_gcid =~ m[/instrument/(.*)$];
       $s->gcis->post("/dataset/rel/$gcis->{identifier}" => {
               add_instrument_measurement => {
                   platform_identifier => $platform_identifier,

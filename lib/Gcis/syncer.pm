@@ -26,8 +26,8 @@ sub logger {
 sub lookup_or_create_gcid {
     my $s = shift;
     my %args = @_;
-    my ($lexicon,$context,$term,$gcid) =
-        @args{qw/lexicon context term gcid/};
+    my ($lexicon,$context,$term,$gcid,$restrict) =
+        @args{qw/lexicon context term gcid restrict/};
     
     # debug "looking for /lexicon/$lexicon/find/$context/$term";
     $s->gcis->ua->max_redirects(0);
@@ -35,12 +35,14 @@ sub lookup_or_create_gcid {
     $s->gcis->ua->max_redirects(5);
     if ($existing) {
         my $gcid = $existing->{gcid};
+        return if $restrict && $gcid !~ /$restrict/;
         return $gcid;
     }
 
     # Make a new one.
     $gcid =~ m[^/] or die "invalid gcid $gcid";
 
+    return if $restrict && $gcid !~ /$restrict/;
     return $gcid if $args{dry_run};
 
     debug "Making a new term $lexicon, $context, $term -> $gcid";
