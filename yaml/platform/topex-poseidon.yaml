@@ -27,7 +27,7 @@ contributors :
         - /organization/national-aeronautics-space-administration
         - /organization/centre-national-d-etudes-spatiales
 exterms :
-    - /podaac/Platform/TOPEX/POSIDEON
+    - /podaac/Platform/TOPEX/POSEIDON
     - /ceos/Mission/Topex-Poseidon
     - /gcmd/platform/e5eb6afb-5d3e-4767-ad08-5293c5b2d88b
 
