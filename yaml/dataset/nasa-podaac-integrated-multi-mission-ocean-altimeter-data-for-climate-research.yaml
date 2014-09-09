@@ -15,6 +15,14 @@ record :
         auspices of the NASA MEaSURE’s program from NASA/GSFC, JPL, University
         of South Florida, University of Colorado, and the NOAA Laboratory for
         Satellite Altimetry.
+    description_attribution : >
+        http://podaac.jpl.nasa.gov/Integrated_Multi-Mission_Ocean_AltimeterData
+contributors :
+    analyst :
+        - /organization/national-aeronautics-space-administration    
+        - /organization/university-south-florida
+        - /organization/university-colorado
+        - /organization/national-oceanic-atmospheric-administration
 files :
     location : ftp://podaac.jpl.nasa.gov/misc/web/images/regional_msl.jpg
     landing_page : http://podaac.jpl.nasa.gov/Integrated_Multi-Mission_Ocean_AltimeterData
