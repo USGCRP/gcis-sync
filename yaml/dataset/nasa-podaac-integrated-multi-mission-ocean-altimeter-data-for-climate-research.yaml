@@ -24,7 +24,7 @@ contributors :
         - /organization/university-colorado
         - /organization/national-oceanic-atmospheric-administration
 files :
-    location : ftp://podaac.jpl.nasa.gov/misc/web/images/regional_msl.jpg
+    location : ftp://podaac.jpl.nasa.gov/allData/merged_alt/preview/global_mean_sea_level/GMSL_TPJAOS.jpg
     landing_page : http://podaac.jpl.nasa.gov/Integrated_Multi-Mission_Ocean_AltimeterData
 prov :
     uri : /dataset/prov/nasa-podaac-integrated-multi-mission-ocean-altimeter-data-for-climate-research
