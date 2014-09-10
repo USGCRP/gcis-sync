@@ -52,6 +52,10 @@ sub _ingest_record {
 
   my $url = $create_url;
   if (my $existing = $s->gcis->get($gcid)) {
+    unless (ref $existing eq 'HASH') {
+        error "Existing $gcid is not a hashref".Dumper($existing);
+        return;
+    }
     $url = $existing->{uri};
   }
   $s->gcis->post($url, $record) or return error $s->gcis->error;
