@@ -21,6 +21,7 @@ our $map = {
                         },
     name        =>  sub { my $dom = shift; $dom->title->text;         },
     description =>  sub { my $dom = shift; join "\n", $dom->at('content')->text;  },
+    description_attribution => sub { shift->at('link[title="Dataset Information"]')->attr('href');  },
     native_id   =>  sub { my $dom = shift; $dom->shortName->text;     },
     url         =>  sub { my $dom = shift; $dom->at('link[title="Dataset Information"]')->attr('href'); },
     lon_min     =>  sub { my $dom = shift; my $w = $dom->at('where') or return undef;
@@ -94,8 +95,10 @@ sub sync {
                     warn "error : ".$c->error;
                 };
             }
-            my $meta = $s->_retrieve_dataset_meta($gcis_info{native_id});
-            $s->_assign_instrument_instances(\%gcis_info, $meta,$dry_run) if $meta;
+            my $meta = $s->_retrieve_dataset_meta($gcis_info{native_id}) or next;
+            $s->_assign_instrument_instances(\%gcis_info, $meta,$dry_run);
+            $s->_assign_files($dataset_gcid, $meta, $dry_run );
+            # $s->_assign_contributors # TODO
         }
         $start_index += $per_page;
     }
@@ -180,5 +183,20 @@ sub _assign_instrument_instances {
           }
       ) or die $s->gcis->error;
   }
+}
+
+sub _assign_files {
+    my $s = shift;
+    my ($gcid, $meta, $dry_run ) = @_;
+    my ($thumb) = $meta->feed->entry->link->grep(sub { $_[0]->attr('title') =~ /thumbnail/i; }) or return;
+    my $file_url = $thumb->attr('href') or return;
+    my ($info) = $meta->feed->entry->link->grep(sub { $_[0]->attr('title') =~ /dataset information/i; }) or return;
+    my $info_url = $thumb->attr('href');
+    debug "adding file $file_url";
+    $s->gcis->add_file_url($gcid => {
+        file_url       => $file_url,
+        landing_page   => $info_url,
+    }) or return error $s->gcis->error;
+    1;
 }
 
