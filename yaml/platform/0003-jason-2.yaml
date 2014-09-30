@@ -28,14 +28,13 @@ contributors :
 exterms :
     - /ceos/Mission/OSTM (Jason-2)
 
-GPSP
-
 instruments :
     - gcid : /instrument/doris
 
     - gcid : /instrument/laser-retroreflector-array
 
     - gcid : /instrument/blackjack
+# GPSP or TSRS-2
 
     - record :
            identifier : poseidon-3
