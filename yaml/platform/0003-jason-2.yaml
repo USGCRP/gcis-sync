@@ -24,11 +24,11 @@ contributors :
         - /organization/national-aeronautics-space-administration
         - /organization/centre-national-d-etudes-spatiales
         - /organization/national-oceanic-atmospheric-administration
-XXX        - /organization/european-organisation-for-the-exploitation-of-meteorological-satellites
+        - /organization/eumetsat
 exterms :
     - /ceos/Mission/OSTM (Jason-2)
 
-GPSP, POSEIDON-3"
+GPSP
 
 instruments :
     - gcid : /instrument/doris
@@ -37,7 +37,23 @@ instruments :
 
     - gcid : /instrument/blackjack
 
-    - gcid : /instrument/poseidon-2
+    - record :
+           identifier : poseidon-3
+           name : >
+               Positioning Ocean Solid Earth Ice Dynamics Orbiting Navigator
+               (Dual frequency solid state radar altimeter) 3
+           description : >
+                The Poseidon-3 radar altimeter is the main instrument on the Jason-2
+                mission. Derived from the Poseidon-1 altimeter on TOPEX/Poseidon and the
+                Poseidon-2 on Jason-1, it measures sea level, wave heights and wind speed.
+           description_attribution : >
+                https://sealevel.jpl.nasa.gov/technology/technologyinstrumentdescription/instrumentdescriptaltimeter/
+      files :
+            location : https://sealevel.jpl.nasa.gov/images/ostm/ostm-altimeter-th1.jpg
+            landing_page : https://sealevel.jpl.nasa.gov/technology/technologyinstrumentdescription/instrumentdescriptaltimeter/
+      exterms :
+            - /ceos/Instrument/POSEIDON-3
+            - /podaac/Sensor/POSEIDON-3
 
     - record :
            identifier : advanced-microwave-radiometer
