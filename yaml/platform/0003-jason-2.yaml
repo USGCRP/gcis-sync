@@ -68,9 +68,9 @@ instruments :
                 for effects of wind-induced enhancements in the sea surface background
                 emission.
            description_attribution : https://directory.eoportal.org/web/eoportal/satellite-missions/j/jason-2
-           files :
-                location : https://directory.eoportal.org/documents/163813/183517/Jason2_Auto11
-                landing_page : https://directory.eoportal.org/web/eoportal/satellite-missions/j/jason-2
-           exterms :
-            - /ceoes/Instrument/AMR
+      files :
+            location : https://directory.eoportal.org/documents/163813/183517/Jason2_Auto11
+            landing_page : https://directory.eoportal.org/web/eoportal/satellite-missions/j/jason-2
+      exterms :
+            - /ceos/Instrument/AMR
 
