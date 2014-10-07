@@ -16,6 +16,7 @@ my $ua  = Mojo::UserAgent->new();
 
 our $map = {
     identifier  =>  sub { my $dom = shift; my $id = lc $dom->shortName->text; 
+                          $id =~ tr[ .][-];
                           return "nasa-podaac-$id" unless $id =~ /^podaac/;
                           return "nasa-$id";
                         },
@@ -71,6 +72,7 @@ sub sync {
                   dry_run => $dry_run,
                   restrict => $gcid_regex,
             );
+            die "bad gcid $dataset_gcid" if $dataset_gcid =~ / /;
             next if $gcid_regex && $dataset_gcid !~ /$gcid_regex/;
             my $alternate_id = $entry->id->text;
             $s->lookup_or_create_gcid(
@@ -91,8 +93,8 @@ sub sync {
             #debug Dumper(\%gcis_info);
             unless ($dry_run) {
                 $c->post($url => \%gcis_info) or do {
-                    error $c->error;
-                    warn "error : ".$c->error;
+                    error "Error posting to $url : ".$c->error;
+                    error "Gcis info : ".Dumper(\%gcis_info);
                 };
             }
             my $meta = $s->_retrieve_dataset_meta($gcis_info{native_id}) or next;
@@ -114,7 +116,7 @@ sub _retrieve_dataset_meta {
     debug "getting $url";
     my $tx = $ua->get($url);
     my $res = $tx->success or do {
-        error $tx->error->{message};
+        error "Error GETting from $url : ".$tx->error->{message};
         return;
     };
     return $res->dom;

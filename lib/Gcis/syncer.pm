@@ -35,6 +35,7 @@ sub lookup_or_create_gcid {
     $s->gcis->ua->max_redirects(5);
     if ($existing) {
         my $gcid = $existing->{gcid};
+        die "found invalid gcid" if $gcid =~ / /;
         return if $restrict && $gcid !~ /$restrict/;
         return $gcid;
     }
