@@ -27,6 +27,7 @@ contributors :
         - /organization/eumetsat
 exterms :
     - /ceos/Mission/OSTM (Jason-2)
+    - /podaac/Platform/OSTM/Jason-2
 
 instruments :
     - gcid : /instrument/doris
