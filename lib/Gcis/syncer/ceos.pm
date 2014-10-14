@@ -6,6 +6,8 @@ use Mojo::UserAgent;
 use Gcis::syncer::util qw/:log pretty_id/;
 use Data::Dumper;
 use List::MoreUtils qw/mesh/;
+use Date::Parse qw/str2time/;
+use DateTime;
 use v5.14;
 
 our $base_src = "http://database.eohandbook.com";
@@ -60,18 +62,14 @@ sub _get_missions {
 
 sub _get_instruments {
     my $s = shift;
-    my $all_missions = shift;
     my @instruments;
 
     debug "GET $instrument_src";
     my $tx1 = $ua->get($instrument_src);
     my $res1 = $tx1->res or die "fail: ".$tx1->error->{message};
     my %params = %defaultParams;
-    if ($all_missions) {
-        $params{'ddlMissionStatus' } = 'All';
-    } else {
-        $params{'ddlInstrumentStatus' } = 'All';
-    }
+    $params{'ddlMissionStatus' } = 'All';
+    $params{'ddlInstrumentStatus' } = 'All';
     $params{__VIEWSTATE} = $res1->dom->find('#__VIEWSTATE')->attr('value');
     $params{__EVENTVALIDATION} = $res1->dom->find('#__EVENTVALIDATION')->attr('value');
     debug "POST to $instrument_src";
@@ -100,23 +98,20 @@ sub sync {
     # Missions (platforms)
     my @missions = $s->_get_missions;
     my @map;
+
     for my $ceos_record (@missions) {  ### Adding missions... [%]   done
+        next unless $ceos_record->{'mission-status'} =~ /^(Mission complete|currently being flown)/i;
         my $platform = $s->_add_platform($ceos_record, $dry_run) or next;
         info "platform $platform";
+        # debug Dumper($ceos_record);
         push @map, {
             platform => $platform,
-            ceos_instruments => $ceos_record->{'instruments'}
+            ceos_instrument_ids => [ split /,\s*/, $ceos_record->{'instrument-ids'} ]
         }
     }
 
     # Instruments
     my @instruments = $s->_get_instruments;
-    my %by_id = map { $_->{'instrument-name-short'} => 1 } @instruments;
-    my @more = $s->_get_instruments(all_missions => 1);
-    for (@more) {
-        next if $by_id{$_->{'instrument-name-short'}};
-        push @instruments, $_;
-    }
     for my $ceos_record (@instruments) {   ### Adding instruments... [%]  done
         my $instrument = $s->_add_instrument($ceos_record, $dry_run) or next;
         info "instrument $instrument";
@@ -124,7 +119,7 @@ sub sync {
 
     # Join
     for my $entry (@map) {  ## Associating platforms and instruments... [%]   done
-        my $instruments = $s->_associate_instruments($entry->{platform}, $entry->{ceos_instruments}, $dry_run);
+        my $instruments = $s->_associate_instruments($entry->{platform}, $entry->{ceos_instrument_ids}, $dry_run);
     }
 }
 
@@ -133,16 +128,28 @@ sub _add_instrument {
     state %seen;
     my $ceos = shift;
     my $dry_run = shift;
-    #return if $ceos->{'instrument-status'} =~ /(proposed|being developed)/i;
-    #debug "ceos data : ".Dumper($ceos);
+    return if $ceos->{'instrument-status'} =~ /(proposed|being developed)/i;
+    # debug "ceos data : ".Dumper($ceos);
 
+    my $name = $ceos->{'instrument-name-full'};
+    $name = $ceos->{'instrument-name-short'} unless length($name) > 2 && $name =~ /\S/;
     my $gcid = $s->lookup_or_create_gcid(
+        lexicon => "ceos",
+        context => "instrumentID",
+        term    => $ceos->{'instrument-id'},
+        gcid    => "/instrument/" . pretty_id($name),
+        dry_run => $dry_run,
+    );
+    my $alt = $s->lookup_or_create_gcid(
         lexicon => "ceos",
         context => "instrument",
         term    => $ceos->{'instrument-name-short'},
-        gcid    => "/instrument/" . pretty_id($ceos->{'instrument-name-short'}),
+        gcid    => $gcid,
         dry_run => $dry_run,
     );
+    # Two shortnames may refer to one numeric identifier
+    debug "multiple matches for ".$ceos->{'instrument-name-short'}." : $gcid, $alt" unless $alt eq $gcid;
+
     my ($id) = $gcid =~ m[/instrument/(.*)];
     if ($seen{$id}++) {
         info "Skipping duplicate instrument id $id" ;
@@ -176,13 +183,25 @@ sub _add_platform {
     #debug "ceos data : ".Dumper($ceos);
     #return if $ceos->{'mission-status'} =~ /N\/A/;
 
+    my $name = $ceos->{'mission-name-full'};
+    $name = $ceos->{'mission-name-short'} unless $name =~ /\S/;
+
     my $gcid = $s->lookup_or_create_gcid(
         lexicon => "ceos",
-        context => "mission",
+        context => "Mission",
         term => $ceos->{'mission-name-short'},
-        gcid => "/platform/".pretty_id($ceos->{'mission-name-short'}),
+        gcid => "/platform/".pretty_id($name),
         dry_run => $dry_run,
     );
+    my $alt = $s->lookup_or_create_gcid(
+        lexicon => "ceos",
+        context => "missionID",
+        term => $ceos->{'mission-id'},
+        gcid => $gcid,
+        dry_run => $dry_run,
+    );
+    die "id mismatch ($gcid != $alt)" unless $gcid eq $alt;
+
     my ($id) = $gcid =~ m[/platform/(.*)];
     if ($seen{$id}++) {
         info "skipping duplicate platform id $id";
@@ -198,9 +217,11 @@ sub _add_platform {
 
     my %platform = (
       identifier => $id,
-      name       => $ceos->{'mission-name-full'},
+      name       => $name,
       url        => $ceos->{'mission-site'},
       audit_note => $s->audit_note,
+      start_date => _ceos_date($ceos->{'launch-date'}),
+      end_date => _ceos_date($ceos->{'eol-date'}),
     );
     $s->gcis->post($url => \%platform) or do {
         warning "Error posting to $url : ".$s->gcis->error;
@@ -209,6 +230,13 @@ sub _add_platform {
     return $platform{identifier};
 }
 
+sub _ceos_date {
+    my $dt = shift or return undef;
+    # Use Jan and 01 for approximate dates.
+    $dt =~ /^\d{4}$/ and $dt="Jan $dt";
+    $dt =~ /^(\w{3}) (\d{4})/ and $dt = "01 $1 $2";
+    return DateTime->from_epoch(epoch => (str2time($dt)))->ymd;
+}
 
 sub audit_note {
     return join "\n",shift->SUPER::audit_note, $base_src;
@@ -217,24 +245,21 @@ sub audit_note {
 sub _associate_instruments {
     my $s = shift;
     my $platform = shift;
-    my $ceos_instruments = shift;
+    my $ceos_instrument_ids = shift;
     my $dry_run = shift;
     my @instruments;
-    for my $ceos_instrument_id (split /\s*,\s*/, $ceos_instruments) {
-        my $gcid = $s->lookup_or_create_gcid(
-            lexicon => "ceos",
-            context => "instrument",
-            term    => $ceos_instrument_id,
-            gcid    => "/instrument/" . pretty_id($ceos_instrument_id),
-            dry_run => $dry_run,
-        );
+    for my $ceos_instrument_id (@$ceos_instrument_ids) {
+        my $gcid = $s->lookup_gcid( "ceos", "instrumentID", $ceos_instrument_id) or do {
+            error "Could not find instrument id '$ceos_instrument_id' for $platform";
+            next;
+        };
         my ($identifier) = $gcid =~ m[/instrument/(.*)$];
         push @instruments, $identifier;
     }
     return \@instruments if $dry_run;
     for my $instrument (@instruments) {
         unless ($s->gcis->get("/instrument/$instrument")) {
-            error "Instrument $instrument not found (platform $platform, Instruments : $ceos_instruments)";
+            error "Instrument $instrument not found (platform $platform)";
             return;
         }
 

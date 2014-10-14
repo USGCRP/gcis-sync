@@ -25,7 +25,8 @@ sub pretty_id {
     $id =~ tr/a-z[0-9]_-/_/dc;
     $id =~ s/-$//;
     $id =~ s/^-//;
-    die "cannot make id from @_" unless $id;
+    $id =~ s/--+/-/;
+    Carp::confess "cannot make id from @_" unless $id;
     return $id;
 }
 

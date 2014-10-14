@@ -23,6 +23,16 @@ sub logger {
     return $_logger;
 }
 
+sub lookup_gcid {
+    my $s = shift;
+    my ($lexicon, $context, $term) = @_;
+    $s->gcis->ua->max_redirects(0);
+    my $existing = $s->gcis->get("/lexicon/$lexicon/find/$context/$term");
+    $s->gcis->ua->max_redirects(5);
+    return unless $existing;
+    return $existing->{gcid};
+}
+
 sub lookup_or_create_gcid {
     my $s = shift;
     my %args = @_;
