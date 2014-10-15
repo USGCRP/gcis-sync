@@ -14,6 +14,8 @@ our $meta_src = Mojo::URL->new("http://podaac.jpl.nasa.gov/ws/search/dataset/")
                 # shortName => MERGED_TP_J1_OSTM_OST_ALL_V2, pretty => true,
 my $ua  = Mojo::UserAgent->new();
 
+our $data_archive = '/organization/jet-propulsion-laboratory';
+
 our $map = {
     identifier  =>  sub { my $dom = shift; my $id = lc $dom->shortName->text; 
                           $id =~ tr[ .][-];
@@ -100,7 +102,7 @@ sub sync {
             my $meta = $s->_retrieve_dataset_meta($gcis_info{native_id}) or next;
             $s->_assign_instrument_instances(\%gcis_info, $meta,$dry_run);
             $s->_assign_files($dataset_gcid, $meta, $dry_run );
-            # $s->_assign_contributors # TODO
+            $s->_assign_contributors($dataset_gcid, $meta, $dry_run );
         }
         $start_index += $per_page;
     }
@@ -202,3 +204,14 @@ sub _assign_files {
     1;
 }
 
+sub _assign_contributors {
+    my $s = shift;
+    my ($gcid, $meta, $dry_run ) = @_;
+    return if $dry_run;
+    my $contribs_url = $gcid;
+    $contribs_url =~ s[dataset/][dataset/contributors/];
+    $s->gcis->post($contribs_url => {
+                organization_identifier => $data_archive,
+                role => 'data_archive'
+        }) or error $s->gcis->error;
+}
