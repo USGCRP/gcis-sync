@@ -101,25 +101,27 @@ sub sync {
 
     for my $ceos_record (@missions) {  ### Adding missions... [%]   done
         next unless $ceos_record->{'mission-status'} =~ /^(Mission complete|currently being flown)/i;
-        my $platform = $s->_add_platform($ceos_record, $dry_run) or next;
+        my $platform = $s->_add_platform($ceos_record, $dry_run, $gcid) or next;
         info "platform $platform";
         # debug Dumper($ceos_record);
         push @map, {
             platform => $platform,
-            ceos_instrument_ids => [ split /,\s*/, $ceos_record->{'instrument-ids'} ]
+            ceos_instrument_ids => [ split /,\s*/, $ceos_record->{'instrument-ids'} ],
+            ceos_agencies => [ split /,\s*/, $ceos_record->{'mission-agencies'}]
         }
     }
 
     # Instruments
     my @instruments = $s->_get_instruments;
     for my $ceos_record (@instruments) {   ### Adding instruments... [%]  done
-        my $instrument = $s->_add_instrument($ceos_record, $dry_run) or next;
+        my $instrument = $s->_add_instrument($ceos_record, $dry_run, $gcid) or next;
         info "instrument $instrument";
     }
 
     # Join
-    for my $entry (@map) {  ## Associating platforms and instruments... [%]   done
+    for my $entry (@map) {  ## Associating platforms, instruments, agencies... [%]   done
         my $instruments = $s->_associate_instruments($entry->{platform}, $entry->{ceos_instrument_ids}, $dry_run);
+        my $agencies = $s->_associate_agencies($entry->{platform}, $entry->{ceos_agencies}, $dry_run);
     }
 }
 
@@ -128,6 +130,7 @@ sub _add_instrument {
     state %seen;
     my $ceos = shift;
     my $dry_run = shift;
+    my $gcid_regex;
     return if $ceos->{'instrument-status'} =~ /(proposed|being developed)/i;
     # debug "ceos data : ".Dumper($ceos);
 
@@ -147,6 +150,7 @@ sub _add_instrument {
         gcid    => $gcid,
         dry_run => $dry_run,
     );
+    return if $gcid_regex && $gcid !~ m[$gcid_regex];
     # Two shortnames may refer to one numeric identifier
     debug "multiple matches for ".$ceos->{'instrument-name-short'}." : $gcid, $alt" unless $alt eq $gcid;
 
@@ -180,6 +184,7 @@ sub _add_platform {
     state %seen;
     my $ceos = shift;
     my $dry_run = shift;
+    my $gcid_regex = shift;
     #debug "ceos data : ".Dumper($ceos);
     #return if $ceos->{'mission-status'} =~ /N\/A/;
 
@@ -188,19 +193,20 @@ sub _add_platform {
 
     my $gcid = $s->lookup_or_create_gcid(
         lexicon => "ceos",
-        context => "Mission",
-        term => $ceos->{'mission-name-short'},
+        context => "missionID",
+        term => $ceos->{'mission-id'},
         gcid => "/platform/".pretty_id($name),
         dry_run => $dry_run,
     );
     my $alt = $s->lookup_or_create_gcid(
         lexicon => "ceos",
-        context => "missionID",
-        term => $ceos->{'mission-id'},
         gcid => $gcid,
+        context => "Mission",
+        term => $ceos->{'mission-name-short'},
         dry_run => $dry_run,
     );
     die "id mismatch ($gcid != $alt)" unless $gcid eq $alt;
+    return if $gcid_regex && $gcid !~ m[$gcid_regex];
 
     my ($id) = $gcid =~ m[/platform/(.*)];
     if ($seen{$id}++) {
@@ -269,5 +275,25 @@ sub _associate_instruments {
     return \@instruments;
 }
 
+sub _associate_agencies {
+    my $s = shift;
+    my $platform = shift;
+    my $ceos_agencies = shift;
+    my $dry_run = shift;
+    my @organizations = map {
+            my $id = $s->lookup_gcid( "ceos", "Agency", $_) or error "missing agency id for $_";
+            $id || ();
+        } @$ceos_agencies;
+    for my $org (@organizations) {
+        debug "adding agency $org";
+        my $contribs_url = "/platform/contributors/$platform";
+        next if $dry_run;
+        $s->gcis->post($contribs_url => {
+                organization_identifier => $org,
+                role => 'contributor'
+        }) or error $s->gcis->error;
+    }
+    return \@organizations;
+}
 
 1;
