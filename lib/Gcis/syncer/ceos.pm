@@ -145,7 +145,7 @@ sub _add_instrument {
     );
     my $alt = $s->lookup_or_create_gcid(
         lexicon => "ceos",
-        context => "instrument",
+        context => "Instrument",
         term    => $ceos->{'instrument-name-short'},
         gcid    => $gcid,
         dry_run => $dry_run,

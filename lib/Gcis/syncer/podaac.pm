@@ -59,7 +59,7 @@ sub sync {
     while ($more) {
         $more = 0;
         my $tx = $ua->get($url->query([ startIndex => $start_index ]));
-        my $res = $tx->success or die $tx->error->{message};
+        my $res = $tx->success or die "$url : ".$tx->error->{message};
         for my $entry ($res->dom->find('entry')->each) {  ### Processing===[%]       done
             last REQUEST if $limit && $count > $limit;
             $more = 1;
