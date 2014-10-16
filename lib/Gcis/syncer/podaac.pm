@@ -14,7 +14,7 @@ our $meta_src = Mojo::URL->new("http://podaac.jpl.nasa.gov/ws/search/dataset/")
                 # shortName => MERGED_TP_J1_OSTM_OST_ALL_V2, pretty => true,
 my $ua  = Mojo::UserAgent->new();
 
-our $data_archive = '/organization/jet-propulsion-laboratory';
+our $data_archive = '/organization/physical-oceanography-distributed-active-archive-center';
 
 our $map = {
     identifier  =>  sub { my $dom = shift; my $id = lc $dom->shortName->text; 
