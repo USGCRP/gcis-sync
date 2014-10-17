@@ -136,13 +136,29 @@ sub _add_instrument {
 
     my $name = $ceos->{'instrument-name-full'};
     $name = $ceos->{'instrument-name-short'} unless length($name) > 2 && $name =~ /\S/;
-    my $gcid = $s->lookup_or_create_gcid(
-        lexicon => "ceos",
-        context => "instrumentID",
-        term    => $ceos->{'instrument-id'},
-        gcid    => "/instrument/" . pretty_id($name),
-        dry_run => $dry_run,
-    );
+
+    # If the numeric ID is not there, make a unique GCID.
+    my $gcid;
+    if (my $existing = $s->lookup_gcid(ceos => instrumentID => $ceos->{'instrument-id'})) {
+        $gcid = $existing;
+    } else {
+        my $candidate = pretty_id($name);
+        my $base = $candidate;
+        my $i = 2;
+        while ($s->gcis->get("/instrument/$candidate")) {
+            debug "/instrument/$candidate exists, trying another id";
+            $candidate = "$base-$i";
+            $i++;
+        }
+        $gcid = $s->lookup_or_create_gcid(
+            lexicon => "ceos",
+            context => "instrumentID",
+            term    => $ceos->{'instrument-id'},
+            gcid    => "/instrument/$candidate",
+            dry_run => $dry_run,
+        );
+    }
+
     my $alt = $s->lookup_or_create_gcid(
         lexicon => "ceos",
         context => "Instrument",
@@ -226,6 +242,7 @@ sub _add_platform {
       name       => $name,
       url        => $ceos->{'mission-site'},
       audit_note => $s->audit_note,
+      platform_type_identifier => 'spacecraft',
       start_date => _ceos_date($ceos->{'launch-date'}),
       end_date => _ceos_date($ceos->{'eol-date'}),
     );

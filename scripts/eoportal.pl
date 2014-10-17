@@ -29,7 +29,13 @@ sub get_image_and_description {
     my $article = $eo->at('.journal-content-article');
     my $image = $article->find('img')->first;
     $image &&= $image->attr('src');
-    my $desc = [ $article->find('p')->each() ]->[1];
+    my $desc;
+    my $index = 0;
+    for ($article->find('p')->each()) {
+        next unless $index++;
+        $desc = $_;
+        last if $desc->text && length($desc->text) > 10;
+    }
     $desc &&= $desc->text;
     my $base = Mojo::URL->new($eoportal_link);
     $image &&=  Mojo::URL->new($image)->host($base->host)->scheme($base->scheme)->to_abs;
