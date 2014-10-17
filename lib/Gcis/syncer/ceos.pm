@@ -179,14 +179,17 @@ sub _add_instrument {
     }
 
     my $url = "/instrument";
-    if (my $existing = $s->gcis->get("/instrument/$id")) {
-        $url = $existing->{uri};
+    my %existing;
+    if (my $existing = $s->gcis->get("/instrument/form/update/$id")) {
+        $url = "/instrument/$id";
         debug "exists : $url";
+        %existing = %$existing;
     }
     return $id if $dry_run;
 
     my %instrument = (
       identifier => $id,
+      %existing,
       name       => $ceos->{'instrument-name-full'},
       description => $ceos->{'instrument-technology'}, 
       audit_note => $s->audit_note,
@@ -234,14 +237,17 @@ sub _add_platform {
     }
 
     my $url = "/platform";
-    if (my $existing = $s->gcis->get("/platform/$id")) {
-        $url = $existing->{uri};
+    my %existing;
+    if (my $existing = $s->gcis->get("/platform/form/update/$id")) {
+        $url = "/platform/$id";
         debug "exists : $url";
+        %existing = %$existing;
     }
     return $id if $dry_run;
 
     my %platform = (
       identifier => $id,
+      %existing,
       name       => $name,
       url        => $ceos->{'mission-site'},
       audit_note => $s->audit_note,
