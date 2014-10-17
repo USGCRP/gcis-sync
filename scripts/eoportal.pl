@@ -26,7 +26,7 @@ sub get_image_and_description {
     my $eoportal_link = $eoportal_span->find('a')->first or return;
     $eoportal_link &&= $eoportal_link->attr('href');
     my $eo = $ua->get($eoportal_link)->res->dom;
-    my $article = $eo->at('.journal-content-article');
+    my $article = $eo->at('.journal-content-article') or return;
     my $image = $article->find('img')->first;
     $image &&= $image->attr('src');
     my $desc;
