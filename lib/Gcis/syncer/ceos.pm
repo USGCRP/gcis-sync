@@ -115,13 +115,16 @@ sub sync {
     my @instruments = $s->_get_instruments;
     for my $ceos_record (@instruments) {   ### Adding instruments... [%]  done
         my $instrument = $s->_add_instrument($ceos_record, $dry_run, $gcid) or next;
+        my $agencies = $s->_associate_agencies(instrument => $instrument,
+            [ split /,\s*/, $ceos_record->{'instrument-agencies'} ],
+            $dry_run);
         info "instrument $instrument";
     }
 
     # Join
     for my $entry (@map) {  ## Associating platforms, instruments, agencies... [%]   done
         my $instruments = $s->_associate_instruments($entry->{platform}, $entry->{ceos_instrument_ids}, $dry_run);
-        my $agencies = $s->_associate_agencies($entry->{platform}, $entry->{ceos_agencies}, $dry_run);
+        my $agencies = $s->_associate_agencies(platform => $entry->{platform}, $entry->{ceos_agencies}, $dry_run);
     }
 }
 
@@ -294,7 +297,8 @@ sub _associate_instruments {
 
 sub _associate_agencies {
     my $s = shift;
-    my $platform = shift;
+    my $what = shift;
+    my $identifier = shift;
     my $ceos_agencies = shift;
     my $dry_run = shift;
     my @organizations = map {
@@ -303,7 +307,7 @@ sub _associate_agencies {
         } @$ceos_agencies;
     for my $org (@organizations) {
         debug "adding agency $org";
-        my $contribs_url = "/platform/contributors/$platform";
+        my $contribs_url = "/$what/contributors/$identifier";
         next if $dry_run;
         $s->gcis->post($contribs_url => {
                 organization_identifier => $org,
