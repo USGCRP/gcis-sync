@@ -140,34 +140,45 @@ sub _assign_instrument_instances {
   my $meta = shift;
   my $dry_run = shift;
   my @sources;
+  state %missing_platform;
+  state %missing_instrument;
+
   $meta->find('podaac\:datasetSource')->each( sub {
       my $e = shift;
       push @sources, {
             platform   => $e->sourceShortName->text,
-            instrument => $e->sensorShortName->text };
+            platform_long   => $e->sourceLongName->text,
+            platform_desc => $e->sourceDescription->text,
+            instrument => $e->sensorShortName->text,
+            instrument_long => $e->sensorLongName->text,
+            instrument_desc => $e->sensorDescription->text,
+        };
     });
   for my $source (@sources) {
       debug "Dataset $gcis->{identifier} : $source->{platform} $source->{instrument}";
 
       my ($platform_gcid, $instrument_gcid);
-      if (my $found = $s->gcis->get("/lexicon/podaac/find/Sensor/$source->{instrument}")) {
-          info "Lookup succeeded, got ".$found->{uri};
-          $instrument_gcid = $found->{uri};
-      } else {
-          error "could not find instrument $source->{instrument}";
-          next;
-      }
       if (my $found = $s->gcis->get("/lexicon/podaac/find/Platform/$source->{platform}")) {
-          info "Lookup succeeded, got ".$found->{uri};
+          debug "Lookup succeeded, got ".$found->{uri};
           $platform_gcid = $found->{uri};
       } else {
           debug "tried to get /lexicon/podaac/find/Platform/$source->{platform}";
-          error "could not find platform $source->{platform}";
-          next;
+          debug "could not find platform $source->{platform} ";
+          unless ($missing_platform{$source->{platform}}++) {
+              error "Missing Platform '$source->{platform}' : $source->{platform_long} -- $source->{platform_desc}";
+          }
       }
+      if (my $found = $s->gcis->get("/lexicon/podaac/find/Sensor/$source->{instrument}")) {
+          debug "Lookup succeeded, got ".$found->{uri};
+          $instrument_gcid = $found->{uri};
+      } else {
+          debug "could not find instrument $source->{instrument} (on platform $source->{platform})";
+          unless ($missing_instrument{$source->{instrument}}++) {
+              error "Missing Sensor on $source->{platform} : '$source->{instrument}' : $source->{instrument_long} -- $source->{instrument_desc}";
+          }
+      }
+      next unless $platform_gcid && $instrument_gcid;
 
-      #$platform_gcid //= "/platform/".(lc $source->{platform});
-      #$instrument_gcid //= "/instrument/".(lc $source->{instrument});
       my $instrument_instance = $platform_gcid . $instrument_gcid;
 
       my $instance = $s->gcis->get($instrument_instance) or do {
@@ -176,7 +187,7 @@ sub _assign_instrument_instances {
       };
 
       next if $dry_run;
-      info "Assigning instrument and platform";
+      debug "Assigning instrument and platform";
       my ($platform_identifier) = $platform_gcid =~ m[/platform/(.*)$];
       my ($instrument_identifier) = $instrument_gcid =~ m[/instrument/(.*)$];
       $s->gcis->post("/dataset/rel/$gcis->{identifier}" => {
