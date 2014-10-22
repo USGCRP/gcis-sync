@@ -189,11 +189,22 @@ sub _add_instrument {
     }
     return $id if $dry_run;
 
+    my %new;
+
+    $new{description} = $ceos->{'instrument-technology'};
+    if ($new{description}) {
+            $new{description_attribution} = 'http://database.eohandbook.com/database/instrumentsummary.aspx?instrumentID='.$ceos->{'instrument-id'};
+    }
+    unless ($existing{description} =~ /\S/) {
+        # replace descriptions iff they are blank
+        delete $existing{description};
+        delete $existing{description_attribution} ;
+    }
     my %instrument = (
       identifier => $id,
+      %new,
       %existing,
       name       => $ceos->{'instrument-name-full'},
-      description => $ceos->{'instrument-technology'}, 
       audit_note => $s->audit_note,
     );
     $s->gcis->post($url => \%instrument) or do {
