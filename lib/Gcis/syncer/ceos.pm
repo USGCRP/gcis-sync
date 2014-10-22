@@ -134,7 +134,7 @@ sub _add_instrument {
     my $ceos = shift;
     my $dry_run = shift;
     my $gcid_regex;
-    return if $ceos->{'instrument-status'} =~ /(proposed|being developed)/i;
+    return if $ceos->{'instrument-status'} =~ /(proposed|being developed|no longer considered)/i;
     # debug "ceos data : ".Dumper($ceos);
 
     my $name = $ceos->{'instrument-name-full'};
