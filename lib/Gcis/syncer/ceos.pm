@@ -53,6 +53,7 @@ sub _get_missions {
     my @header = map pretty_id($_->text), $res->dom->find('table > tr > th')->each;
     for my $row ($res->dom->find('table > tr')->each) {
         my @cells = map $_->text, $row->find('td')->each;
+        do { s/^\s+//g; s/\s+$//g; } for @cells;
         next unless @cells;
         my %record = mesh @header, @cells;
         push @missions, \%record;
@@ -80,6 +81,7 @@ sub _get_instruments {
     my @header = map pretty_id($_->text), $res->dom->find('table > tr > th')->each;
     for my $row ($res->dom->find('table > tr')->each) {
         my @cells = map $_->text, $row->find('td')->each;
+        do { s/^\s+//g; s/\s+$//g; } for @cells;
         next unless @cells;
         my %record = mesh @header, @cells;
         push @instruments, \%record;
