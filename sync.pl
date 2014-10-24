@@ -71,6 +71,15 @@ sub main {
 
 sync.pl -- sync gcis with various srouces
 
+=head1 DESCRIPTION
+
+sync.pl pulls data from various external sources and updates infromation in the
+GCIS using the RESTful API.
+
+=head1 SYNOPSIS
+
+./sync.pl [OPTIONS]
+
 =head1 OPTIONS
 
 =item B<--url>
@@ -104,6 +113,12 @@ A comma-separated list of syncers to run.
 =item B<--audit_note>
 
 Use this in the audit note (more syncer-dependent details may be appended).
+
+=head1 EXAMPLES
+
+    ./sync.pl --syncer=ceos --url=http://localhost:3000
+    ./sync.pl --syncer=ceos --url=https://data-stage.globalchange.gov
+    ./sync.pl --syncer=podaac --url=http://localhost:3000 --log_level=debug
 
 =cut
 
