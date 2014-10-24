@@ -1,0 +1,73 @@
+=head1 NAME
+
+syncer/ceos.pm -- Synchronize CEOS data with the GCIS
+
+=head1 SYNOPSIS
+
+   ./sync.pl --syncer=ceos --url=https://data-stage.globalchange.gov
+
+=head1 DESCRIPTION
+
+The CEOS syncer pulls platform, instrument and mission data using the
+"download to excel" function available from L<http://database.eohandbook.com>.
+
+It pulls missions, instruments and agencies and ingests GCIS platforms, instruments
+and organizations, respectively.
+
+=head1 Lexicons
+
+The CEOS syncer uses the L<ceos|http://data.globalchange.gov/lexicon/ceos> lexicon
+to translate identifiers within CEOS to GCIDs.
+
+=head1 Resources
+
+=head2 Platforms
+
+Platforms are extracted from L<http://database.eohandbook.com/database/missiontable.aspx>.
+
+=head3 Scope
+
+Platforms are excluded if their status is not "mission complete" or "currently being flown".
+
+=head3 Identifiers
+
+The numeric CEOS identifier for a platform is used to identify the GCID for a platform.
+The short name is stored as an alternative identifier.
+
+=head3 Fields
+
+The following fields in GCIS are updated based on the CEOS information :
+
+    name, url, platform_type_identifier, start_date, end_date
+
+=head2 Instruments
+
+Instruments are extracted from L<http://database.eohandbook.com/database/instrumenttable.aspx>.
+Instruments are associated with platforms using the relationships described by CEOS.  The
+association of a platform and an instrument is GCIS is called an "instrument instance", whereas
+an "instrument" refers to a class of instruments.
+
+=head2 Scope
+
+Instruments are included unless their status is "proposed", "being developed" or "no longer considered".
+
+=head2 Identifiers
+
+The numeric CEOS identifier for an instrument is used to identify the instrument.  The short name is
+stored as an alternative identifier.
+
+=head3 Fields
+
+The following fields in GCIS are updated based on the CEOS information :
+
+    name, description (only if one does not exist), description_attribution
+
+The description is generated from the "instrument technology" field.
+
+=head2 Organizations
+
+The CEOS agencies are only used if an entry for an agency exists in the GCIS.
+
+Agencies are associated with instruments or platforms using the role "contributor".
+
+=cut
