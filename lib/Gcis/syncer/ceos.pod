@@ -11,8 +11,9 @@ syncer/ceos.pm -- Synchronize CEOS data with the GCIS
 The CEOS syncer pulls platform, instrument and mission data using the
 "download to excel" function available from L<http://database.eohandbook.com>.
 
-It pulls missions, instruments and agencies and ingests GCIS platforms, instruments
-and organizations, respectively.
+It pulls missions, instruments and agencies.  It ingests missions and instruments,
+as platforms and instruments.  It also associates missions and instruments with
+GCIS organizations, using the CEOS agencies.
 
 =head1 Lexicons
 
