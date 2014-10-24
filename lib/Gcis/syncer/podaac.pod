@@ -1,0 +1,45 @@
+=head1 SYNOPSIS
+
+   ./sync.pl --syncer=podaac --url=https://data-stage.globalchange.gov
+
+=head1 DESCRIPTION
+
+The PODAAC syncer pulls dataset information from JPL's L<Physical Oceanography DAAC|http://podaac.jpl.nasa.gov>,
+using the public L<opensearch API|http://podaac.jpl.nasa.gov/ws/search/dataset/>.
+
+It pulls metadata for datasets, and associates platforms and instruments with GCIS platforms and instruments.
+It also associates lists the PODAAC as the archive for each dataset (using the L<GCID|http://data.globalchange.gov/organization/physical-oceanography-distributed-active-archive-center> for PODAAC).
+
+=head1 Lexicons
+
+The PODAAC syncer uses the L<podaac|http://data.globalchange.gov/lexicon/podaac> lexicon to
+translate identifiers within PODAAC to GCIDs.
+
+=head1 Resources
+
+=head1 Datasets
+
+=head2 Scope
+
+Metadata for all of the PODAAC datasets are pulled into the GCIS.
+
+=head2 Identifiers
+
+The identifier for a PODAAC dataset is formed by using the shortName field from the PODAAC
+metadata.  The short names are prepended with "nasa-podaac" (some already start with "podaac",
+in which case only "nasa" is prepended).
+
+=head2 Fields
+
+The following fields are populated based on the PODAAC fields :
+
+    name, description, description_attribution, native_id, url, lat/lon + min/max, start/end time, release_dt
+
+The platform and sensor names are looked up in the GCIS lexicon table to find
+GCIDs for platforms and instruments respectively.  If there is a match, the dataset
+is associated with the GCIS platform and instrument.
+
+=cut
+
+
+
