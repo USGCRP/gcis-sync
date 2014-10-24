@@ -1,0 +1,15 @@
+=head1 NAME
+
+gcis-sync : synchronize data in the GCIS with various sources, such as dx.doi.org, CEOS, PO.DAAC.
+
+=head1 DESCRIPTION
+
+
+Please see L<sync.pl> for usage of the command line synchronization utility.
+
+For the details of a particular syncer, see the pod for that syncer.  For instance :
+L<lib/syncer/podaac>, L<lib/syncer/ceos>.
+
+=cut
+
+
