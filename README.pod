@@ -5,10 +5,12 @@ gcis-sync : synchronize data in the GCIS with various sources, such as dx.doi.or
 =head1 DESCRIPTION
 
 
-Please see L<"sync.pl"> for usage of the command line synchronization utility.
+Please see L<sync.pl|https://github.com/USGCRP/gcis-sync/blob/master/sync.pl> for usage
+of the command line synchronization utility.
 
 For the details of a particular syncer, see the pod for that syncer.  For instance :
-L<"lib/syncer/podaac">, L<"lib/syncer/ceos">.
+L<lib/Gcis/syncer/ceos|https://github.com/USGCRP/gcis-sync/blob/master/lib/Gcis/syncer/ceos.pod>,
+L<lib/Gcis/syncer/podaac|https://github.com/USGCRP/gcis-sync/blob/master/lib/Gcis/syncer/podaac.pod>.
 
 =cut
 
