@@ -16,6 +16,13 @@ For the details of a particular syncer, see the pod for that syncer.  For instan
 L<lib/Gcis/syncer/ceos|https://github.com/USGCRP/gcis-sync/blob/master/lib/Gcis/syncer/ceos.pod>,
 L<lib/Gcis/syncer/podaac|https://github.com/USGCRP/gcis-sync/blob/master/lib/Gcis/syncer/podaac.pod>.
 
+=head1 INSTALLATION and USAGE
+
+ git clone https://github.com/USGCRP/gcis-sync
+ cd gcis-sync
+ cpanm --installdeps .
+ ./sync.pl --help
+
 =cut
 
 
