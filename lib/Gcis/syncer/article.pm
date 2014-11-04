@@ -33,13 +33,21 @@ sub _set_title {
     return $return_value;
 }
 
+# return 1 if year of article is one less (don't update year)
+# return 2 if article year is more different
 sub _set_year {
     my $s = shift;
     my $article = shift;
     my $year = shift;
     return 0 if $article->{year} eq $year;
     debug "year : changing $article->{year} to $year";
-    $article->{year} = $year;
+    my $return_value = 1;
+    if ($article->{year} != ($year - 1)) {
+        info "old year : $article->{year}";
+        info "new year : $year";
+        $return_value = 2;
+        $article->{year} = $year;
+    }
     return 1;
 }
 
@@ -92,11 +100,11 @@ sub sync {
             warning "no title in crossref for $doi";
         }
         if (my $year = $crossref->{issued}{'date-parts'}[0][0]) {
-            if ($s->_set_year($article, $crossref->{issued}{'date-parts'}[0][0])) {
+            if (my $year_change = $s->_set_year($article, $year) > 1) {
                 $changed = 1;
                 $stats{year_changed}++;
                 $how .= ", " if $how;
-                $how .= "year change";
+                $how .= $year_change == 1 ? "year touch-up" : "major year change";
             }
         } else {
             warning "No year in crossref for $doi";
@@ -104,6 +112,7 @@ sub sync {
         if ($dry_run) {
             if ($changed) {
                 info "ready to save http://dx.doi.org/$doi";
+                info "$uri : update ($how)";
             } else {
                 info "no change for $doi";
             }
