@@ -2,6 +2,7 @@
 id: ccsm3
 native_id: CCSM3
 name: Community Climate System Model, version 3.0 (CCSM3)
+originating_group : /organization/national-center-atmospheric-research
 url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CCSM3.htm
 website : http://www2.cesm.ucar.edu/
 description: >
