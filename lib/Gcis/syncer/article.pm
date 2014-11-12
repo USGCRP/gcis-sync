@@ -97,7 +97,7 @@ sub sync {
     my %stats;
     my $i = 0;
     debug "debugging output enabled";
-    for my $art (@articles) { ### Processing===[%]       done
+    for my $art (@articles) { 
         debug "article $art->{identifier} :";
         last if $limit && $i++ > $limit;
         my $uri = $art->{uri} or die "no uri";
@@ -122,19 +122,28 @@ sub sync {
         if ($crossref->{title}) {
             if (my $title_change = $s->_set_title($article, $crossref->{title})) {
                 $changed{article} = 1;
-                $stats{title_change}++;
-                $how = $title_change == 1 ? "title touch-up" : "major title change";
+                if ($title_change == 1) {
+                    $stats{title_changed_touch_up}++;
+                    $how = "title touch-up";
+                } else {
+                    $stats{title_changed_major}++;
+                    $how = "major title change";
+                }
             }
         } else {
             warning "no title in crossref for $doi";
         }
 
         if (my $year = $crossref->{issued}{'date-parts'}[0][0]) {
-            if (my $year_change = $s->_set_year($article, $year) > 1) {
-                $changed{article} = 1;
-                $stats{year_changed}++;
-                $how .= ", " if $how;
-                $how .= $year_change == 1 ? "year touch-up" : "major year change";
+            if (my $year_change = $s->_set_year($article, $year)) {
+                if ($year_change == 1) {
+                    $stats{year_diff_but_okay}++;
+                } else {
+                    $changed{article} = 1;
+                    $stats{year_changed}++;
+                    $how .= ", " if $how;
+                    $how .= "year change";
+                }
             }
         } else {
             warning "No year in crossref for $doi";
@@ -169,10 +178,14 @@ sub sync {
             }
             if (my $journal_title_change = $s->_set_journal_title($journal, $journal_title)) {
                 $changed{journal} = 1;
-                $stats{journal_title_changed}++;
                 $how .= ", " if $how;
-                $how .= $journal_title_change == 1 ? "journal title touch-up" : 
-                                                     "journal major title change";
+                if ($journal_title_change == 1) {
+                    $stats{journal_title_changed_touch_up}++;
+                    $how .= "journal title touch-up";
+                } else { 
+                    $stats{journal_title_changed_major}++;
+                    $how .= "journal major title change";
+                }
             }
         }
 
