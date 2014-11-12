@@ -1,7 +1,7 @@
 ---
 id: cnrm-cm3
 name: Centre National de Recherches Météorologiques Climate Model
-origination_group : /organization/centre-national-de-recheres-meteorologiques
+originating_group : /organization/centre-national-de-recheres-meteorologiques
 native_id: CNRM-CM3
 url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CNRM-CM3.htm
 website : http://www.cnrm.meteo.fr/scenario2004/references_eng.html
