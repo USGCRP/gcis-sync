@@ -1,14 +1,17 @@
 ---
-identifier: cnrm-cm3
-name: Centre National de Recherches Météorologiques Climate Model
-originating_group : /organization/centre-national-de-recheres-meteorologiques
-native_id: CNRM-CM3
-reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CNRM-CM3.htm
-website : http://www.cnrm.meteo.fr/scenario2004/references_eng.html
-description: >
-    The CNRM-CM3 global coupled system is the third version of the
-    ocean-atmosphere model initially developed at CERFACS (Toulouse, France),
-    then regularlarly updated at Center National Weather Research  (CNRM,
-    METEO-FRANCE, Toulouse).
-description_attribution: >
-    http://www.cnrm.meteo.fr/scenario2004/references_eng.html
+record :
+    identifier: cnrm-cm3
+    name: Centre National de Recherches Météorologiques Climate Model
+    native_id: CNRM-CM3
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CNRM-CM3.htm
+    website : http://www.cnrm.meteo.fr/scenario2004/references_eng.html
+    description: >
+        The CNRM-CM3 global coupled system is the third version of the
+        ocean-atmosphere model initially developed at CERFACS (Toulouse, France),
+        then regularlarly updated at Center National Weather Research  (CNRM,
+        METEO-FRANCE, Toulouse).
+    description_attribution: >
+        http://www.cnrm.meteo.fr/scenario2004/references_eng.html
+contributors :
+    contributor :
+        - /organization/centre-national-recheres-meteorologiques
