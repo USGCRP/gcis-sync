@@ -1,5 +1,5 @@
 ---
-id: pcm
+identifier: pcm
 native_id: PCM
 name: Parallel Climate Model
 url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/PCM.htm
