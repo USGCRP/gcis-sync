@@ -2,7 +2,7 @@
 identifier: pcm
 native_id: PCM
 name: Parallel Climate Model
-url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/PCM.htm
+reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/PCM.htm
 website : http://www.cgd.ucar.edu/pcm/
 description: >
     This is a joint effort to develop a DOE-sponsored parallel climate model

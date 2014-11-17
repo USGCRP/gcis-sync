@@ -2,7 +2,7 @@
 identifier: ipsl-cm4
 native_id: IPSL-CM4
 name: Institut Pierre Simon Laplace Climate Model version 4
-url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/IPSL-CM4.htm
+reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/IPSL-CM4.htm
 description: >
     The IPSL-CM4 model (Marti et al. 2010) couples four components of the
     Earth system: LMDZ-4 (Hourdin et al. 2006) for atmospheric dynamics

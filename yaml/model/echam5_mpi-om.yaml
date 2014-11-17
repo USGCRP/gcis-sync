@@ -3,7 +3,7 @@ identifier: echam5_mpi-om
 native_id: ECHAM5/MPI-OM
 name: >
   European Centre for Medium-Range Weather Forecasts, Hamburg Generation 5 / Max Planck Institute
-url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/ECHAM5_MPI-OM.htm
+reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/ECHAM5_MPI-OM.htm
 description: >
     ECHAM5 is the 5th generation of the ECHAM general circulation model.
     Depending on the configuration the model resolves the atmosphere up to

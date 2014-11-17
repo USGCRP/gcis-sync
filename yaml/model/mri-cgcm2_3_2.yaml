@@ -3,7 +3,7 @@ identifier: mri-cgcm2_3_2
 native_id: MRI-CGCM2.3.2
 name: Meteorological Research Institute Coupled Global Climate Model Version 2.3.2
 website : http://www.mri-jma.go.jp/Dep/cl/cl4/publications/yukimoto_pap2001.pdf
-url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/MRI-GCGM2.3.2.htm
+reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/MRI-GCGM2.3.2.htm
 description: >
     The new version of the global coupled atmosphere-ocean general circulation
     model (MRI-CGCM2), developed at the Meteorological Research Institute

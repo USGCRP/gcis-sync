@@ -2,7 +2,7 @@
 identifier: ukmo-hadcm3
 native_id: UKMO-HadCM3
 name: United Kingdom Met Office, Hadley Centre, Climate Model Version 3
-url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/HadCM3.htm
+reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/HadCM3.htm
 website : http://www.metoffice.gov.uk/research/modelling-systems/unified-model/climate-models/hadcm3
 description:
     HadCM3 is a coupled climate model that has been used extensively

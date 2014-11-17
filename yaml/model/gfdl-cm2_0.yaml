@@ -2,7 +2,7 @@
 identifier: gfdl-cm2_0
 native_id: GFDL-CM2.0
 name: Geophysical Fluid Dynamics Laboratory Coupled Model, Version 2.0
-url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/GFDL-cm2.htm
+reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/GFDL-cm2.htm
 website : http://nomads.gfdl.noaa.gov/CM2.X/references/
 description: 
     In 2004, a new family of GFDL climate models (the CM2.x family) was
