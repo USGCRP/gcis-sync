@@ -46,9 +46,9 @@ sub sync {
 #    fields and values should match the API (which matches the database)
 sub _ingest_record {
   my $s          = shift;
-  my $gcid       = shift;
-  my $create_url = shift;
-  my $record     = shift;
+  my $gcid       = shift or die "Missing gcid";
+  my $create_url = shift or die "Missing create url";
+  my $record     = shift or die "Missing record";
 
   my $url = $create_url;
   if (my $existing = $s->gcis->get($gcid)) {
@@ -182,18 +182,30 @@ sub _sync_extra {
     }
 }
 
+sub _infer_gcid {
+    my $s = shift;
+    my $file = shift;
+    my $name = $file->basename;
+    my $dir = $file->dir->basename;
+    $name =~ s/\.yaml$//;
+    my $gcid = "/". join '/', $dir, $name;
+    return $gcid;
+}
+
 sub _ingest_file {
     my $s         = shift;
     my $file      = shift;
     my $gcid_regex = shift;
     my $dry_run   = shift;
     my $data = Load(scalar $file->slurp);
-    my $gcid = $data->{gcid} or return error "missing gcid in $file";
+    my $gcid = $data->{gcid} || $s->_infer_gcid($file) or return error "could not determine gcid for $file";
     return if $gcid_regex && $gcid !~ /$gcid_regex/;
     return if $dry_run;
-    debug "file : ".$file->basename;
+    debug "file : ".$file;
     debug "gcid : ".$gcid;
-    $s->_ingest_record($gcid, $data->{create} => $data->{record}) or return 0;
+    my $create_endpoint = $data->{create} || $gcid =~ s{/[^/]*$}{}r;
+    $data = { record => { %{ $data } } } unless exists($data->{record});
+    $s->_ingest_record($gcid, $create_endpoint => $data->{record}) or return 0;
     $s->_ingest_prov($gcid => $data->{prov});
     $s->_ingest_files($gcid => $data->{files});
     $s->_ingest_contributors($gcid => $data->{contributors});
