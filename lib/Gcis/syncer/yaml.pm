@@ -127,8 +127,10 @@ sub _ingest_contributors {
     my $dest = $gcid;
     $dest =~ s[/([^/]+)$][/contributors/$1] or die "cannot form contributors URL from GCID $gcid";
     for my $role (keys %$contributors) {
-        for my $uri (@{ $contributors->{$role} }) {
-            $uri =~ m[/organization/(.*)$] or die "only /organization contributors so far";
+        my $these = $contributors->{$role};
+        $these = [ $these ] unless ref $these eq 'ARRAY';
+        for my $uri (@$these) {
+            $uri =~ m[/organization/(.*)$] or die "only /organization contributors so far ($uri)";
             my $organization_identifier = $1;
             debug "adding $role $organization_identifier";
             $s->gcis->post( $dest => {
