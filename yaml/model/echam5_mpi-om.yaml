@@ -1,7 +1,6 @@
 ---
 record :
     identifier: echam5_mpi-om
-    native_id: ECHAM5/MPI-OM
     name: >
       European Centre for Medium-Range Weather Forecasts, Hamburg Generation 5 / Max Planck Institute
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/ECHAM5_MPI-OM.htm
@@ -13,4 +12,6 @@ record :
     description_attribution: http://www.mpimet.mpg.de/en/wissenschaft/modelle/echam/echam5.html
 contributors :
     contributor :
-        /organization/max-planck-institute-meteorology
+        /organization/max-planck-institute-meteorologie
+exterms :
+    - /cmip3/model/ECHAM5/MPI-OM

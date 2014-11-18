@@ -36,6 +36,14 @@ sub sync {
         my $file = shift;
         return if $file->is_dir();
         return unless $file->basename =~ /\.yaml$/;
+        my $child_class = $file->dir->basename;
+        my $plugin = join '::', __PACKAGE__, $child_class;
+        eval "use $plugin";
+        if ($@) {
+            warn $@ unless $@ =~ /^Can't locate.*$child_class.pm/;
+        } else {
+            bless $s, $plugin;
+        }
         $s->_ingest_file($file, $gcid, $dry_run);
     } );
 }
@@ -165,25 +173,6 @@ sub _ingest_exterms {
     }
 }
 
-sub _sync_extra {
-    my $s = shift;
-    my %a = @_;
-    my ($gcid,$data,$dir) = @a{qw/gcid data dir/};
-
-    my $class = join '::', ref $s, $dir;
-    eval "use $class";
-    my $path = $class;
-    $path =~ s[::][/]g;
-    return if $@ && $@ =~ m[Can't locate $path.pm];
-    die $@ if $@;
-    for my $k (keys %$data) {
-        next if $base_handles{$k};
-        my $method = join '::', $class, $k;
-        debug "syncing $k (using $class)";
-        $s->$method($gcid => $data->{$k});
-    }
-}
-
 sub _infer_gcid {
     my $s = shift;
     my $file = shift;
@@ -194,25 +183,61 @@ sub _infer_gcid {
     return $gcid;
 }
 
+sub _munge_record {
+    my $s = shift;
+    my $record = shift;
+    # overload this in derived classes
+    return $record;
+}
+
 sub _ingest_file {
     my $s         = shift;
     my $file      = shift;
     my $gcid_regex = shift;
     my $dry_run   = shift;
-    my $data = Load(scalar $file->slurp);
+    my $data = eval { Load(scalar $file->slurp) };
+    if ($@) {
+        error "$file : $@";
+        return;
+    }
     my $gcid = $data->{gcid} || $s->_infer_gcid($file) or return error "could not determine gcid for $file";
-    return if $gcid_regex && $gcid !~ /$gcid_regex/;
+    return if $gcid_regex && $gcid !~ /^$gcid_regex/;
     return if $dry_run;
     debug "file : ".$file;
     debug "gcid : ".$gcid;
     my $create_endpoint = $data->{create} || $gcid =~ s{/[^/]*$}{}r;
-    $data = { record => { %{ $data } } } unless exists($data->{record});
-    $s->_ingest_record($gcid, $create_endpoint => $data->{record}) or return 0;
+    #
+    # Accepted formats :
+    #
+    #  (1)
+    #      field1 : value1
+    #      field2 : value2
+    #
+    #  (2)
+    #     record :
+    #          field1 : value1
+    #          field2 : value2
+    #
+    #  (3)
+    #     record :
+    #        - field1 : value1
+    #          field2 : value
+    #
+    #
+    my $records =
+          !exists($data->{record})        ? [ $data           ]  # (1)
+        : ref($data->{record}) ne 'ARRAY' ? [ $data->{record} ]  # (2)
+        : $data->{record};                                       # (3)
+    die "not an array ref : ".Dumper($data) unless ref($records) eq 'ARRAY';
+    my $default = $data->{_record_default} || {};
+    for my $record (@$records) {
+        $record = $s->_munge_record($record) or next;
+        $s->_ingest_record($gcid, $create_endpoint => { %$default, %$record }) or return 0;
+    }
     $s->_ingest_prov($gcid => $data->{prov});
     $s->_ingest_files($gcid => $data->{files});
     $s->_ingest_contributors($gcid => $data->{contributors});
     $s->_ingest_exterms($gcid => $data->{exterms});
-    $s->_sync_extra(gcid => $gcid,data => $data, dir => $file->dir->basename);
 }
 
 

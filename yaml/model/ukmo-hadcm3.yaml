@@ -1,7 +1,6 @@
 ---
 record :
     identifier: ukmo-hadcm3
-    native_id: UKMO-HadCM3
     name: United Kingdom Met Office, Hadley Centre, Climate Model Version 3
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/HadCM3.htm
     website : http://www.metoffice.gov.uk/research/modelling-systems/unified-model/climate-models/hadcm3
@@ -20,4 +19,5 @@ record :
 contributors :
     contributor :
          - /organization/hadley-centre-climate-prediction-research
-
+exterms :
+    - /cmip3/model/UKMO-HadCM3

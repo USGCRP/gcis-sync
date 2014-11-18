@@ -1,7 +1,6 @@
 ---
 record :
     identifier: ukmo-hadgem1
-    native_id: UKMO-HadGEM1
     name: United Kingdom Met Office, Hadley Centre Global Environmental Model version 1
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/HadGEM1.htm
     website : http://www.metoffice.gov.uk/research/modelling-systems/unified-model/climate-models/hadgem1
@@ -14,3 +13,5 @@ record :
 contributors :
     contributor :
          - /organization/hadley-centre-climate-prediction-research
+exterms :
+    - /cmip3/model/UKMO-HadGEM1

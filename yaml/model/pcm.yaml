@@ -1,7 +1,6 @@
 ---
 record :
     identifier: pcm
-    native_id: PCM
     name: Parallel Climate Model
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/PCM.htm
     website : http://www.cgd.ucar.edu/pcm/
@@ -18,3 +17,5 @@ record :
 contributors :
     contributor :
          - /organization/national-center-atmospheric-research
+exterms :
+    - /cmip3/model/PCM

@@ -1,7 +1,6 @@
 ---
 record :
     identifier: ipsl-cm4
-    native_id: IPSL-CM4
     name: Institut Pierre Simon Laplace Climate Model version 4
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/IPSL-CM4.htm
     description: >
@@ -19,3 +18,5 @@ record :
 contributors :
     contributor :
          - /organization/institut-pierre-simon-laplace
+exterms :
+    - /cmip3/model/IPSL-CM4

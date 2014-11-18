@@ -2,7 +2,6 @@
 record :
     identifier: cnrm-cm3
     name: Centre National de Recherches Météorologiques Climate Model
-    native_id: CNRM-CM3
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CNRM-CM3.htm
     website : http://www.cnrm.meteo.fr/scenario2004/references_eng.html
     description: >
@@ -15,3 +14,5 @@ record :
 contributors :
     contributor :
         - /organization/centre-national-recheres-meteorologiques
+exterms :
+    - /cmip3/model/CNRM-CM3
