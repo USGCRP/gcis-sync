@@ -1,12 +1,16 @@
 ---
-identifier: ukmo-hadgem1
-native_id: UKMO-HadGEM1
-name: United Kingdom Met Office, Hadley Centre Global Environmental Model version 1
-reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/HadGEM1.htm
-website : http://www.metoffice.gov.uk/research/modelling-systems/unified-model/climate-models/hadgem1
-description:
-    HadGEM1 is the first in a new generation of coupled climate models
-    incorporating a non-hydrostatic, fully compressible, deep atmosphere
-    formulation with a semi-implicit semi-Lagrangian time integration scheme.
-description_attribution:
-    http://www.metoffice.gov.uk/research/modelling-systems/unified-model/climate-models/hadgem1
+record :
+    identifier: ukmo-hadgem1
+    native_id: UKMO-HadGEM1
+    name: United Kingdom Met Office, Hadley Centre Global Environmental Model version 1
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/HadGEM1.htm
+    website : http://www.metoffice.gov.uk/research/modelling-systems/unified-model/climate-models/hadgem1
+    description:
+        HadGEM1 is the first in a new generation of coupled climate models
+        incorporating a non-hydrostatic, fully compressible, deep atmosphere
+        formulation with a semi-implicit semi-Lagrangian time integration scheme.
+    description_attribution:
+        http://www.metoffice.gov.uk/research/modelling-systems/unified-model/climate-models/hadgem1
+contributors :
+    contributor :
+         - /organization/hadley-centre-climate-prediction-research

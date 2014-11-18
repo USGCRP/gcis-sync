@@ -1,8 +1,12 @@
 ---
-identifier: csiro-mk3_0
-name: CSIRO Mark 3.0
-native_id: CSIRO-Mk3.0
-reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CSIRO-Mk3.0.htm
-website : ~
-description: ~
-description_attribution: ~
+record :
+    identifier: csiro-mk3_0
+    name: CSIRO Mark 3.0
+    native_id: CSIRO-Mk3.0
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CSIRO-Mk3.0.htm
+    website : ~
+    description: ~
+    description_attribution: ~
+contributors :
+    contributor :
+        - /organization/commonwealth-scientific-industrial-research-organisation

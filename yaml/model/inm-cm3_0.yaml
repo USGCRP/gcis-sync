@@ -1,7 +1,11 @@
 ---
-identifier: inm-cm3_0
-native_id: INM-CM3.0
-name: Institute of Numerical Mathematics Climate Model Version 3.0
-reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/INM_CM3.0.htm
-description: ~
-description_attribution: ~
+record :
+    identifier: inm-cm3_0
+    native_id: INM-CM3.0
+    name: Institute of Numerical Mathematics Climate Model Version 3.0
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/INM_CM3.0.htm
+    description: ~
+    description_attribution: ~
+contributors :
+    contributor :
+         - /organization/institute-numerical-mathematics
