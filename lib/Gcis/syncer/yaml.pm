@@ -41,6 +41,7 @@ sub sync {
         eval "use $plugin";
         if ($@) {
             warn $@ unless $@ =~ /^Can't locate.*$child_class.pm/;
+            bless $s, __PACKAGE__;
         } else {
             bless $s, $plugin;
         }
@@ -54,12 +55,12 @@ sub sync {
 #    fields and values should match the API (which matches the database)
 sub _ingest_record {
   my $s          = shift;
-  my $gcid       = shift or die "Missing gcid";
+  my $gcid       = shift; # may be tbd
   my $create_url = shift or die "Missing create url";
   my $record     = shift or die "Missing record";
 
   my $url = $create_url;
-  if (my $existing = $s->gcis->get($gcid)) {
+  if ($gcid and (my $existing = $s->gcis->get($gcid))) {
     unless (ref $existing eq 'HASH') {
         error "Existing $gcid is not a hashref".Dumper($existing);
         return;
@@ -190,6 +191,34 @@ sub _munge_record {
     return $record;
 }
 
+sub _determine_create_endpoint {
+    my $s = shift;
+    my $file = shift;
+    my $dir = $file->dir->basename;
+    # e.g. POST to /model creates a model.
+    return "/$dir";
+}
+
+sub _extract_gcid {
+    my $s = shift;
+    my ($file,$record) = @_;
+    return '/' . $file->dir->basename . '/' . $record->{identifier};
+    # override to provide a way to extract a gcid from a file/record
+    return undef;
+}
+
+sub _exclude_file {
+    # return true if we should exclude this file based on the gcid regex.
+    my $s = shift;
+    my $file = shift;
+    my $gcid_regex = shift;
+    my $record = shift;
+    return 0 unless $gcid_regex;
+    my $test_gcid = '/' . $file->dir->basename .'/', $record->{identifier} // $file->basename;
+    # yes exclude, if we don't match.
+    return 1 if $test_gcid !~ /^$gcid_regex/;
+    return 0;
+}
 sub _ingest_file {
     my $s         = shift;
     my $file      = shift;
@@ -200,12 +229,8 @@ sub _ingest_file {
         error "$file : $@";
         return;
     }
-    my $gcid = $data->{gcid} || $s->_infer_gcid($file) or return error "could not determine gcid for $file";
-    return if $gcid_regex && $gcid !~ /^$gcid_regex/;
     return if $dry_run;
-    debug "file : ".$file;
-    debug "gcid : ".$gcid;
-    my $create_endpoint = $data->{create} || $gcid =~ s{/[^/]*$}{}r;
+    my $create_endpoint = $data->{create} || $s->_determine_create_endpoint($file);
     #
     # Accepted formats :
     #
@@ -230,10 +255,19 @@ sub _ingest_file {
         : $data->{record};                                       # (3)
     die "not an array ref : ".Dumper($data) unless ref($records) eq 'ARRAY';
     my $default = $data->{_record_default} || {};
+    my $gcid;
     for my $record (@$records) {
-        $record = $s->_munge_record($record) or next;
-        $s->_ingest_record($gcid, $create_endpoint => { %$default, %$record }) or return 0;
+        my %merged = ( %$default, %$record );
+        next if $s->_exclude_file($file, $gcid_regex, $record);
+        my $munged = $s->_munge_record(\%merged) or next;
+        $gcid = $data->{gcid} // $s->_extract_gcid($file,$munged);
+        next if $gcid && ($gcid_regex && $gcid !~ /^$gcid_regex/);
+        debug "file : ".$file;
+        debug "gcid : ".($gcid // "unknown");
+        $s->_ingest_record($gcid, $create_endpoint => $munged ) or return 0;
     }
+    return unless $gcid;
+    return if $gcid_regex && $gcid !~ /^$gcid_regex/;
     $s->_ingest_prov($gcid => $data->{prov});
     $s->_ingest_files($gcid => $data->{files});
     $s->_ingest_contributors($gcid => $data->{contributors});

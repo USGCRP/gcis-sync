@@ -5,7 +5,7 @@ _record_default :
     scenario_identifier : sres_b1
     range_start : 2021-01-01
     range_end : 2050-01-01
-    spatial_resolution : ~
+    spatial_resolution : 1 degree
     time_resolution : ~
 record :
     - model_identifier : /lexicon/cmip3/model/CCSM3
