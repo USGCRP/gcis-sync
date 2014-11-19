@@ -1,5 +1,6 @@
 ---
 record :
+    project_identifier: cmip3
     identifier: ccsm3
     name: Community Climate System Model, version 3.0 (CCSM3)
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CCSM3.htm

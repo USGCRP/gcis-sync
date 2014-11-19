@@ -1,5 +1,6 @@
 ---
 record :
+    project_identifier: cmip3
     identifier: mri-cgcm2_3_2
     name: Meteorological Research Institute Coupled Global Climate Model Version 2.3.2
     website : http://www.mri-jma.go.jp/Dep/cl/cl4/publications/yukimoto_pap2001.pdf

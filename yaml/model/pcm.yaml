@@ -1,5 +1,6 @@
 ---
 record :
+    project_identifier: cmip3
     identifier: pcm
     name: Parallel Climate Model
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/PCM.htm

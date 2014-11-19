@@ -1,5 +1,6 @@
 ---
 record :
+    project_identifier: cmip3
     identifier: ukmo-hadcm3
     name: United Kingdom Met Office, Hadley Centre, Climate Model Version 3
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/HadCM3.htm

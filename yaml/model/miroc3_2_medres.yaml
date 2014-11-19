@@ -1,5 +1,6 @@
 ---
 record :
+    project_identifier: cmip3
     identifier: miroc3_2_medres
     name: MIROC3.2 (Model for Interdisciplinary Research on Climate)
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/MIROC3.2_medres.htm

@@ -1,5 +1,6 @@
 ---
 record :
+    project_identifier: cmip3
     identifier: echo-g
     website : http://mad.zmaw.de/Models/Modelliste1_neu.html
     name: ECHO-G = ECHAM4 + HOPE-G

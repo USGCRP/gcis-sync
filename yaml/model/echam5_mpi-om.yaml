@@ -1,5 +1,6 @@
 ---
 record :
+    project_identifier: cmip3
     identifier: echam5_mpi-om
     name: >
       European Centre for Medium-Range Weather Forecasts, Hamburg Generation 5 / Max Planck Institute
