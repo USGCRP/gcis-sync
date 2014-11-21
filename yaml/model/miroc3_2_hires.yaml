@@ -1,0 +1,15 @@
+---
+record :
+    project_identifier: cmip3
+    identifier: miroc3_2_hires
+    name: MIROC3.2 (Model for Interdisciplinary Research on Climate)
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/MIROC3.2_hires.htm
+    description: ~
+    description_attribution: ~
+contributors :
+    contributor :
+        - /organization/center-climate-system-research-university-tokyo
+        - /organization/national-institute-environmental-studies-japan
+        - /organization/frontier-research-center-global-change
+exterms :
+    /cmip3/model/MIROC3.2(hires)
