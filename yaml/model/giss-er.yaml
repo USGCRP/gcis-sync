@@ -10,6 +10,7 @@ record :
         Called ModelE, it provides the ability to simulate many different configurations of Earth System Models - 
         including interactive atmospheric chemistry, aerosols, carbon cycle and other tracers, as well as the standard 
         atmosphere, ocean, sea ice and land surface components.
+    description_attribution: http://www.giss.nasa.gov/tools/modelE/
 contributors :
     contributor :
          - /organization/goddard-institute-space-studies
