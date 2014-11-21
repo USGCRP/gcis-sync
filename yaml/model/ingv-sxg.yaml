@@ -1,0 +1,11 @@
+---
+record :
+    project_identifier: cmip3
+    identifier: ingv-sxg
+    name: INGV-SXG (SINTEX-G). ECHAM4.6, OPA8.2, LIM(Louvain-La-Neuve sea-ice model)
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/INGV-SXG.htm
+contributors :
+    contributor :
+         - /organization/instituto-nazionale-geofisica-vulcanologia
+exterms :
+    - /cmip3/model/ingv-sxg
