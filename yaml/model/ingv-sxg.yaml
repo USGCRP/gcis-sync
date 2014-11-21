@@ -2,7 +2,7 @@
 record :
     project_identifier: cmip3
     identifier: ingv-sxg
-    name: Community Climate System Model, version 3.1 (CCSM3)
+    name: INGV-SXG (SINTEX-G). ECHAM4.6, OPA8.2, LIM(Louvain-La-Neuve sea-ice model)
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/INGV-SXG.htm
 contributors :
     contributor :
