@@ -13,6 +13,7 @@ record :
         atmospheric constituents, the Earth's topography, the Earth's surface distribution of ocean, glacial ice, 
         or vegetation, and many others. The time varying prognostic variables include fluid mass, horizontal velocity, 
         heat, water vapor, salt, and subsurface mass and energy fields.
+    description_attribution: http://aom.giss.nasa.gov/
 contributors :
     contributor :
          - /organization/goddard-institute-space-studies
