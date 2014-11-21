@@ -6,5 +6,10 @@ record :
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/MIROC3.2_medres.htm
     description: ~
     description_attribution: ~
+contributors :
+    contributor :
+        - /organization/center-climate-system-research-university-tokyo
+        - /organization/national-institute-environmental-studies-japan
+        - /organization/frontier-research-center-global-change
 exterms :
     /cmip3/model/MIROC3.2 (medres)
