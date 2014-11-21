@@ -1,0 +1,17 @@
+---
+record :
+    project_identifier: cmip3
+    identifier: giss-eh
+    name: GISS ModelE-H
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/GISS-E.htm
+    website : http://www.giss.nasa.gov/tools/modelE/
+    description:
+        The current incarnation of the GISS series of coupled atmosphere-ocean models is now available. 
+        Called ModelE, it provides the ability to simulate many different configurations of Earth System Models - 
+        including interactive atmospheric chemistry, aerosols, carbon cycle and other tracers, as well as the standard 
+        atmosphere, ocean, sea ice and land surface components.
+contributors :
+    contributor :
+         - /organization/goddard-institute-space-studies
+exterms :
+    - /cmip3/model/giss-eh
