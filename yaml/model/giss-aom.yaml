@@ -2,7 +2,7 @@
 record :
     project_identifier: cmip3
     identifier: giss-aom
-    name: AOM 4x3
+    name: GISS Atmosphere-Ocean Model
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/GISS-AOM.htm
     website : http:/aom.giss.nasa.gov
     description:
