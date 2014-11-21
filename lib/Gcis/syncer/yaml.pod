@@ -1,0 +1,73 @@
+=head1 NAME
+
+syncer/yaml.pm -- Synchronize YAML files with the GCIS
+
+=head1 SYNOPSIS
+
+    ./sync.pl --syncer=yaml --gcid='/platform/*' --url=https://data-stage.globalchange.gov
+    ./sync.pl --syncer=yaml --url=https://data-stage.globalchange.gov
+
+=head1 DESCRIPTION
+
+The YAML syncer ingests YAML files into the GCIS.
+
+The format of the YAML files corresponds to the database schema in GCIS, with
+optional special handling depending on the type of resource.
+
+=head1 Resources
+
+The layout of the yaml/ directory tree corresponds to subclasses of the yaml syncer.
+
+For instance, files in yaml/dataset are ingested using syncer::yaml::dataset.
+Files in yaml/project are ingested using syncer::yaml::project.
+
+All YAML syncers accept files of this form
+
+    field1 : value1
+    field2 : value2
+
+where the fields corresponds to the columns in the database table for the particular
+syncer (which also corresponds to the JSON structure accepted by the API).
+
+In addition to the above form, this form is accepted
+
+    record :
+        field1 : value1
+        field2 : value2
+
+    contributors :
+        role :
+            - organization_gcid
+
+    files :
+        location : ...
+        landing_page : ...
+
+    prov :
+        entries :
+        - rel : prov relationship
+          parent : URI of parent or lexicon entry
+
+For a working example, look in /yaml/dataset.
+
+Multiple records may also be ingested by creating an array, such as :
+
+    record :
+        - field1 : value1
+          field2 : value2
+        - field1 : another_value1
+          field2 : another_value2
+
+Also, if there are common values among records, the _record_default can be
+set, e.g.
+
+    _record_default :
+        commonfield : commonvalue
+    record :
+        - field1 : value1
+          field2 : value2
+        - field1 : another_value1
+          field2 : another_value2
+
+=cut
+

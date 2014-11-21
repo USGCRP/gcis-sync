@@ -1,0 +1,23 @@
+---
+record :
+    project_identifier: cmip3
+    identifier: ipsl-cm4
+    name: Institut Pierre Simon Laplace Climate Model version 4
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/IPSL-CM4.htm
+    description: >
+        The IPSL-CM4 model (Marti et al. 2010) couples four components of the
+        Earth system: LMDZ-4 (Hourdin et al. 2006) for atmospheric dynamics
+        and physics, OPA (Madec et al. 1997) for ocean dynamics, LIM (Fichefet
+        and Maqueda 1997; 1999) for sea ice dynamics and thermodynamics, and
+        ORCHIDEE (Krinner et al. 2005) for the land surface. Sulphate aerosols
+        concentrations are externally imposed and direct and indirect aerosol
+        forcings are considered (Quaas et al. 2004, Dufresne et al. 2005). This
+        model participates to the CMIP3 project, the multimodel ensembles climate
+        projections used in the intergovernmental panel on climate change (IPCC)
+        assessment report (IPCC-AR4).
+    description_attribution: http://icmc.ipsl.fr/index.php/icmc-models/icmc-ipsl-cm4
+contributors :
+    contributor :
+         - /organization/institut-pierre-simon-laplace
+exterms :
+    - /cmip3/model/IPSL-CM4

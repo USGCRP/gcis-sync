@@ -1,0 +1,13 @@
+---
+record :
+    project_identifier: cmip3
+    identifier: inm-cm3_0
+    name: Institute of Numerical Mathematics Climate Model Version 3.0
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/INM_CM3.0.htm
+    description: ~
+    description_attribution: ~
+contributors :
+    contributor :
+         - /organization/institute-numerical-mathematics
+exterms :
+    - /cmip3/model/INM-CM3.0

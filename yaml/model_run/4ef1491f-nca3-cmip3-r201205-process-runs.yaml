@@ -1,0 +1,26 @@
+---
+_record_default :
+    activity_identifier : 4ef1491f-nca3-cmip3-r201205-process
+    project_identifier : cmip3
+    scenario_identifier : sres_b1
+    range_start : 2021-01-01
+    range_end : 2050-01-01
+    spatial_resolution : 1 degree
+    time_resolution : ~
+record :
+    - model_identifier : /lexicon/cmip3/model/CCSM3
+    - model_identifier : /lexicon/cmip3/model/CGCM3.1 (T47)
+    - model_identifier : /lexicon/cmip3/model/CNRM-CM3
+    - model_identifier : /lexicon/cmip3/model/CSIRO-Mk3.0
+    - model_identifier : /lexicon/cmip3/model/ECHAM5/MPI-OM
+    - model_identifier : /lexicon/cmip3/model/ECHO-G
+    - model_identifier : /lexicon/cmip3/model/GFDL-CM2.0
+    - model_identifier : /lexicon/cmip3/model/GFDL-CM2.1
+    - model_identifier : /lexicon/cmip3/model/INM-CM3.0
+    - model_identifier : /lexicon/cmip3/model/IPSL-CM4
+    - model_identifier : /lexicon/cmip3/model/MIROC3.2 (medres)
+    - model_identifier : /lexicon/cmip3/model/MRI-CGCM2.3.2
+    - model_identifier : /lexicon/cmip3/model/PCM
+    - model_identifier : /lexicon/cmip3/model/UKMO-HadCM3
+    - model_identifier : /lexicon/cmip3/model/UKMO-HadGEM1
+

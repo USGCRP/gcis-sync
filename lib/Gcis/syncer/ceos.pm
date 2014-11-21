@@ -89,6 +89,40 @@ sub _get_instruments {
     return @instruments;
 }
 
+sub _extract_agencies {
+    my $s = shift;
+    my $in = shift;
+    # The agency list is hard to parse due to nested parentheses and commas, e.g.
+    #   JAXA (MOE (Japan), NIES (Japan))
+    #   JAXA, MOE (Japan), MITI (Japan), CNES, NASA"
+    #   ASI (Mod (Italy))
+    # So we just extract known terms from it and report anything left over.
+   
+    state $known_agencies;
+    unless ($known_agencies) {
+        my $terms = $s->gcis->get('/lexicon/ceos/list/Agency') or die $s->gcis->error;
+        $known_agencies = [ sort { length($b) <=> length($a) } map $_->{term}, @$terms ];
+    }
+    my @found;
+    my $last;
+    my $orig = $in;
+    while (1) {
+        $last = $in;
+        for my $word (@$known_agencies) {
+            next unless length($word);
+            $in =~ s/(\Q$word\E)// or next;
+            push @found, $1;
+            $in =~ s/ ?\Q()\E//;
+            last unless $in =~ /\w/;
+        }
+        last if $last eq $in;
+    }
+    if ($in !~ /^[, ()]*$/) {
+        error " Agency list ($orig) has extra information : $in";
+    }
+    return @found;
+}
+
 sub sync {
     my $s = shift;
     my %a       = @_;
@@ -104,12 +138,12 @@ sub sync {
     for my $ceos_record (@missions) {  ### Adding missions... [%]   done
         next unless $ceos_record->{'mission-status'} =~ /^(Mission complete|currently being flown)/i;
         my $platform = $s->_add_platform($ceos_record, $dry_run, $gcid) or next;
-        info "platform $platform";
+        debug "platform $platform";
         # debug Dumper($ceos_record);
         push @map, {
             platform => $platform,
             ceos_instrument_ids => [ split /,\s*/, $ceos_record->{'instrument-ids'} ],
-            ceos_agencies => [ split /,\s*/, $ceos_record->{'mission-agencies'}]
+            ceos_agencies => [ $s->_extract_agencies($ceos_record->{'mission-agencies'}) ]
         }
     }
 
@@ -118,9 +152,9 @@ sub sync {
     for my $ceos_record (@instruments) {   ### Adding instruments... [%]  done
         my $instrument = $s->_add_instrument($ceos_record, $dry_run, $gcid) or next;
         my $agencies = $s->_associate_agencies(instrument => $instrument,
-            [ split /,\s*/, $ceos_record->{'instrument-agencies'} ],
+            [ $s->_extract_agencies($ceos_record->{'instrument-agencies'}) ],
             $dry_run);
-        info "instrument $instrument";
+        debug "instrument $instrument";
     }
 
     # Join
