@@ -1,0 +1,11 @@
+---
+record :
+    project_identifier: cmip3
+    identifier: ingv-sxg
+    name: Community Climate System Model, version 3.1 (CCSM3)
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/INGV-SXG.htm
+contributors :
+    contributor :
+         - /organization/instituto-nazionale-geofisica-vulcanologia
+exterms :
+    - /cmip3/model/ingv-sxg
