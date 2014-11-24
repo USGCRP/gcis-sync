@@ -2,7 +2,7 @@
 record :
     project_identifier: cmip3
     identifier: giss-aom
-    name: GISS Atmosphere-Ocean Model
+    name: Goddard Institute for Space Studies Atmosphere-Ocean Model
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/GISS-AOM.htm
     website : http:/aom.giss.nasa.gov
     description:
