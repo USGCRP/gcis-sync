@@ -7,5 +7,9 @@ record :
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/ECHO-G.htm
     description: ~
     description_attribution: ~
+contributors :
+    contributor :
+        - /organization/meteorological-institute-university-bonn
+        - /organization/institute-kma
 exterms :
     - /cmip3/model/ECHO-G

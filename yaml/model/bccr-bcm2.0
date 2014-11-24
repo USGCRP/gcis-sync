@@ -1,0 +1,13 @@
+---
+record :
+    project_identifier: cmip3
+    identifier: bccr-bcm2.0
+    name: Bergen Climate Model (BCM) Version 2
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/BCCR_BCM2.0.htm
+    description:
+    description_attribution: 
+contributors :
+    contributor :
+         - /organization/bjerknes-centre-climate-research
+exterms :
+    - /cmip3/model/BCCR-BCM-2.0

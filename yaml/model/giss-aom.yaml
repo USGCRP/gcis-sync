@@ -1,0 +1,21 @@
+---
+record :
+    project_identifier: cmip3
+    identifier: giss-aom
+    name: Goddard Institute for Space Studies Atmosphere-Ocean Model
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/GISS-AOM.htm
+    website : http:/aom.giss.nasa.gov
+    description:
+        GISS Atmosphere-Ocean Model is a computer program that simulates the Earth's climate in three 
+        dimensions on a latitude-longitude grid. The Model requires two kinds of input, specified parameters 
+        and prognostic variables, and generates two kinds of output, climate diagnostics and prognostic variables. 
+        The specified input parameters include physical constants, the Earth's orbital parameters, the Earth's 
+        atmospheric constituents, the Earth's topography, the Earth's surface distribution of ocean, glacial ice, 
+        or vegetation, and many others. The time varying prognostic variables include fluid mass, horizontal velocity, 
+        heat, water vapor, salt, and subsurface mass and energy fields.
+    description_attribution: http://aom.giss.nasa.gov/
+contributors :
+    contributor :
+         - /organization/goddard-institute-space-studies
+exterms :
+    - /cmip3/model/GISS-AOM

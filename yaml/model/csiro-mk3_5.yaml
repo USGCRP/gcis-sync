@@ -1,0 +1,14 @@
+---
+record :
+    project_identifier: cmip3
+    identifier: csiro-mk3_0
+    name: CSIRO Mark 3.5
+    reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CSIRO-Mk3.5.htm
+    website : ~
+    description: ~
+    description_attribution: ~
+contributors :
+    contributor :
+        - /organization/commonwealth-scientific-industrial-research-organisation
+exterms :
+    - /cmip3/model/CSIRO-Mk3.5

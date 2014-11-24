@@ -1,7 +1,7 @@
 ---
 record :
     project_identifier: cmip3
-    identifier: cgcm31_t47
+    identifier: cgcm31_t63
     name: Community Climate System Model, version 3.1 (CCSM3)
     reference_url: http://www.cccma.ec.gc.ca/
     website : http://www.ec.gc.ca/ccmac-cccma/default.asp?lang=En&n=1299529F-1
@@ -11,4 +11,4 @@ contributors :
     contributor :
          - /organization/canadian-centre-climate-modelling-analysis
 exterms :
-    - /cmip3/model/CGCM3.1(T47)
+    - /cmip3/model/CGCM3.1(T63)
