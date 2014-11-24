@@ -2,7 +2,7 @@
 record :
     project_identifier: cmip3
     identifier: giss-eh
-    name: GISS ModelE-H
+    name: Goddard Institute for Space Studies ModelE-H
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/GISS-E.htm
     website : http://www.giss.nasa.gov/tools/modelE/
     description:
