@@ -18,6 +18,7 @@ GetOptions(
   'log_file=s'  => \(my $log_file = '/tmp/gcis-export.log'),
   'log_level=s' => \(my $log_level = "info"),
   'report=s'    => \(my $report),
+  'not_all'     => \(my $not_all),
 );
 
 pod2usage(-msg => "missing url", -verbose => 1) unless $url;
@@ -27,6 +28,7 @@ pod2usage(-msg => "missing url", -verbose => 1) unless $url;
 sub main {
     my $s = shift;
     my $e = exim->new($url);
+    $e->not_all if $not_all;
 
     my $logger = Mojo::Log->new($log_file eq '-' ? () : (path => $log_file));
     $logger->level($log_level);
@@ -36,35 +38,10 @@ sub main {
     my $prefix = ($report =~ /^\/report\//) ? "" : "/report/"; 
     my $rep = $e->get("$prefix$report");
 
-    $e->get_report($rep->{uri});
-    $e->get_chapters('report');
-    $e->get_figures('report');
-    $e->get_images('figures');
-    $e->get_tables('report');
-    $e->get_findings('report');
-    $e->get_references('report');
-    $e->get_publications('references');
-    $e->get_journals('publications');
-    $e->get_activities('images');
-    $e->get_datasets('activities');
+    $e->get_full_report($rep->{uri});
 
-    my @items = qw (
-        report
-        chapters
-        figures
-        images
-        tables
-        findings
-        publications
-        datasets
-        );
-    for my $item (@items) {
-        $e->get_contributors($item);
-        $e->get_files($item);
-    }
-
-    $e->export;
-    $e->logger_info("done");
+    $e->dump;
+    $e->logger_info('done');
 }
 
 1;
@@ -102,6 +79,10 @@ Log level (see Mojo::Log)
 =item B<--report>
 
 Report unique identifier
+
+=item B<--not_all>
+
+Set to only export first set of items (opposite of "?all=1").
 
 =head1 EXAMPLES
 
