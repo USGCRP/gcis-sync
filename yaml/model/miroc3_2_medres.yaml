@@ -12,4 +12,5 @@ contributors :
         - /organization/national-institute-environmental-studies-japan
         - /organization/frontier-research-center-global-change
 exterms :
-    /cmip3/model/MIROC3.2(medres)
+    - /cmip3/model/MIROC3.2(medres)
+    - /cmip3/model/MIROC3.2 (medres)
