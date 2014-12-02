@@ -19,3 +19,4 @@ contributors :
          - /organization/geophysical-fluid-dynamics-laboratory
 exterms :
     - /cmip3/model/GFDL-CM2.0
+    - /esg/model/gfdl_cm2_0

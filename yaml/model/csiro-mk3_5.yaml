@@ -12,3 +12,4 @@ contributors :
         - /organization/commonwealth-scientific-industrial-research-organisation
 exterms :
     - /cmip3/model/CSIRO-Mk3.5
+    - /esg/model/csiro_mk3_5

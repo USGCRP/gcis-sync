@@ -11,3 +11,4 @@ contributors :
          - /organization/bjerknes-centre-climate-research
 exterms :
     - /cmip3/model/BCCR-BCM-2.0
+    - /esg/model/bccr_bcm2_0

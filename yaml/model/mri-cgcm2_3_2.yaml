@@ -26,3 +26,4 @@ files :
       landing_page : http://ds.data.jma.go.jp/tcc/tcc/products/gwp/gwp7/html_e/fig/figA1-1.html
 exterms :
     - /cmip3/model/MRI-CGCM2.3.2
+    - /esg/model/mri_cgcm2_3_2a

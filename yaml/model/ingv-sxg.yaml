@@ -18,3 +18,4 @@ contributors :
          - /organization/instituto-nazionale-geofisica-vulcanologia
 exterms :
     - /cmip3/model/INGV-SXG
+    - /esg/model/ingv_echam4

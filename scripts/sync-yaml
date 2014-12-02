@@ -1,0 +1,8 @@
+#!/bin/bash
+
+url=${1:-http://localhost:3000}
+
+for i in project model scenario model_run; do
+   ./sync.pl --gcid="/$i/.*" --syncer=yaml --url=$url
+done
+

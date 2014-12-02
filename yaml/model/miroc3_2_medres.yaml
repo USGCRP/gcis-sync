@@ -14,3 +14,4 @@ contributors :
 exterms :
     - /cmip3/model/MIROC3.2(medres)
     - /cmip3/model/MIROC3.2 (medres)
+    - /esg/model/miroc3_2_medres

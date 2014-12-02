@@ -16,3 +16,4 @@ contributors :
          - /organization/hadley-centre-climate-prediction-research
 exterms :
     - /cmip3/model/UKMO-HadGEM1
+    - /esg/model/ukmo_hadgem1

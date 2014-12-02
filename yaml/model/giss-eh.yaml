@@ -16,3 +16,4 @@ contributors :
          - /organization/goddard-institute-space-studies
 exterms :
     - /cmip3/model/GISS-EH
+    - /esg/model/giss_model_e_h

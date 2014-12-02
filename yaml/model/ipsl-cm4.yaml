@@ -21,3 +21,4 @@ contributors :
          - /organization/institut-pierre-simon-laplace
 exterms :
     - /cmip3/model/IPSL-CM4
+    - /esg/model/ipsl_cm4

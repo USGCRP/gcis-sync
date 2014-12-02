@@ -16,3 +16,4 @@ contributors :
         /organization/max-planck-institute-meteorologie
 exterms :
     - /cmip3/model/ECHAM5/MPI-OM
+    - /esg/model/mpi_echam5
