@@ -1,0 +1,13 @@
+---
+record :
+    model_identifier : /lexicon/esg/model/ncar_pcm1
+    project_identifier : cmip3
+    scenario_identifier : sres_b1
+    range_start : 2000-01-16
+    range_end : 2299-12-16
+    sequence : 1
+    spatial_resolution : '1 degree'
+    time_resolution : '1 month'
+    activity_identifier : 4ef1491f-nca3-cmip3-r201205-process
+exterms :
+    - /esg/model_run/pcmdi.ipcc4.ncar_pcm1.sresb1.run1.monthly
