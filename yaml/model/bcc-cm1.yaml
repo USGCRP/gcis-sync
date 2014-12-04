@@ -3,7 +3,7 @@ record :
     project_identifier: cmip3
     identifier: bcc-cm1
     website : http://forecast.bcccsm.ncc-cma.net/web/channel-26.htm
-    name: Beijing Climate Center Coupled Model
+    name: Beijing Climate Center Climate System Model
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/BCC-CM1.htm
     description:
         Through the key project of short-term climate prediction in the national "Ninth Five-Year Plan" 
