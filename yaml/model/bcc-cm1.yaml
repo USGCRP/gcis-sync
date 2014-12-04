@@ -2,23 +2,16 @@
 record :
     project_identifier: cmip3
     identifier: bcc-cm1
-    website : http://forecast.bcccsm.ncc-cma.net/web/channel-43.htm
+    website : http://forecast.bcccsm.ncc-cma.net/web/channel-26.htm
     name: Beijing Climate Center Coupled Model
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/BCC-CM1.htm
-    description: BCC_CSM1.1 is the version 1.1 of the Beijing Climate Center Climate System
-                Model (BCC_CSM1.1) developed at the Beijing Climate Center (BCC), 
-                China Meteorological Administration (CMA), based on NCAR CCSM2.0.1. 
-                It is a fully coupled global climate–carbon model including interactive vegetation 
-                and global carbon cycle, in which the atmospheric component BCC_AGCM2.1, ocean 
-                component MOM4-L40, land component BCC_AVIM1.0, and sea ice component 
-                SIS are fully coupled and interact with each other through fluxes of momentum, 
-                energy, water and carbon at their interfaces. Information between the atmosphere 
-                and the ocean is exchanged once per simulated day. The exchange of atmospheric 
-                carbon with the land biosphere is calculated at each model time step (20 min). Further
-                details can be referred to Wu et al. (2012a; 2012b).
-    description_attribution: ~
+    description:
+        Through the key project of short-term climate prediction in the national "Ninth Five-Year Plan" 
+        and its enhancement project, a global ocean-atmosphere coupled model with mediate resolution has been established 
+        in Beijing Climate Center, which is named as BCC_CM1.0.
+    description_attribution: http://forecast.bcccsm.ncc-cma.net/web/channel-26.htm
 contributors :
     contributor :
         - /organization/bejing-climate-center
 exterms :
-    - /cmip3/model/bcc-cm1
+    - /cmip3/model/BCC-CM1
