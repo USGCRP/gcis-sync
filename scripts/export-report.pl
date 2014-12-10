@@ -4,14 +4,14 @@ use Getopt::Long qw/GetOptions/;
 use Pod::Usage qw/pod2usage/;
 
 use Gcis::Client;
-use YAML;
+use YAML::XS;
 use Data::Dumper;
 use exim;
 
 use strict;
 use v5.14;
 
-# local $YAML::Indent = 2;
+# $YAML::XS::Indent = 4;
 
 GetOptions(
   'url=s'       => \(my $url),
