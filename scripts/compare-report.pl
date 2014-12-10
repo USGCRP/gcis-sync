@@ -18,6 +18,7 @@ GetOptions(
   'log_file=s'  => \(my $log_file = '/tmp/gcis-export.log'),
   'log_level=s' => \(my $log_level = "info"),
   'input=s'     => \(my $input),
+  'map_file=s'  => \(my $map_file),
   'not_all'     => \(my $not_all),
 );
 
@@ -31,6 +32,8 @@ sub main {
     my $b = exim->new($url);
     $b->not_all if $not_all;
     my $c = exim->new();
+    my $map;
+    my $map = $map_file ? exim->new() : '';
 
     my $logger = Mojo::Log->new($log_file eq '-' ? () : (path => $log_file));
     $logger->level($log_level);
@@ -38,7 +41,13 @@ sub main {
     $b->logger_info("starting: ".$url);
 
     $a->load($input);
+    if ($map) {
+        $map->load($map_file);
+        $map->set_up_map($a->{base}[0], $url);
+    }
+
     $b->get_full_report($a->{report}[0]->{uri});
+    $b->{base}[0] = $url;
 
     my @items = qw (
         report
@@ -54,10 +63,11 @@ sub main {
         datasets
         people
         organizations
+        contributors
         files
         );
     for my $item (@items) {
-        $c->compare($item, $a, $b);
+        $c->compare($item, $a, $b, $map);
     }
 
     $c->dump;
@@ -78,6 +88,9 @@ information.  The report source is a yaml file (see export-report.txt).
 The destination is a gcis instance.
 
 The output comparison is yaml (on STDOUT).
+
+If a mapping file is provided, the comparison is made after the redirect 
+is done.
 
 =head1 SYNOPSIS
 
@@ -100,6 +113,10 @@ Log level (see Mojo::Log)
 =item B<--input>
 
 Input (source) report (yaml file, defaults to STDIN).
+
+=item B<--map_File>
+
+Input mapping file (yaml file, defaults to NULL).
 
 =item B<--not_all>
 
