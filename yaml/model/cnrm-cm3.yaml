@@ -17,3 +17,4 @@ contributors :
         - /organization/centre-national-recheres-meteorologiques
 exterms :
     - /cmip3/model/CNRM-CM3
+    - /esg/model/cnrm_cm3

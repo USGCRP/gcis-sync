@@ -16,3 +16,4 @@ record :
     description_attribution: http://nomads.gfdl.noaa.gov/nomads/forms/deccen/
 exterms :
     - /cmip3/model/GFDL-CM2.1
+    - /esg/model/gfdl_cm2_1

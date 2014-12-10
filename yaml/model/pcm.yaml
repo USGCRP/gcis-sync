@@ -20,3 +20,4 @@ contributors :
          - /organization/national-center-atmospheric-research
 exterms :
     - /cmip3/model/PCM
+    - /esg/model/ncar_pcm1

@@ -23,7 +23,7 @@ sub _munge_record {
     }
     $record->{sequence} //= 1;
     my $url = '/'. join "/", "model_run", @$record{qw/model_identifier
-         scenario_identifier range_start range_end spatial_resolution sequence/};
+         scenario_identifier range_start range_end spatial_resolution time_resolution sequence/};
     debug "getting $url";
     if (my $existing = $s->gcis->get($url)) {
         debug "found existing record $existing->{identifier}";

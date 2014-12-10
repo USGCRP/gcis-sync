@@ -19,3 +19,4 @@ contributors :
          - /organization/goddard-institute-space-studies
 exterms :
     - /cmip3/model/GISS-AOM
+    - /cmip3/model/giss_aom

@@ -13,3 +13,5 @@ record :
 files :
     location : http://www.ipcc.ch/ipccreports/tar/wg1/images/figts-17.gif
     landing_page : http://www.ipcc.ch/ipccreports/tar/wg1/figts-17.htm
+exterms :
+    - /esg/scenario/sresa2 

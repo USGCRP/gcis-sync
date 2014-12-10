@@ -4,7 +4,7 @@ record :
     identifier: ingv-sxg
     name: Istituto Nazionale di Geofisica e Vulcanologia Scale Interactions Experiment-G
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/INGV-SXG.htm
-    description:
+    description: >
         INGV-SXG is an Atmosphere Ocean sea-ice General Circulation Model (AOGCM) developed at INGV with the aim of 
         investigating the features and the mechanisms of the climate variability and change.  This model was used to 
         produce the INGV-CMCC Intergovernmental Panel on Climate Change (IPCC) scenario simulations. INGV-SXG is an
@@ -18,3 +18,4 @@ contributors :
          - /organization/instituto-nazionale-geofisica-vulcanologia
 exterms :
     - /cmip3/model/INGV-SXG
+    - /esg/model/ingv_echam4

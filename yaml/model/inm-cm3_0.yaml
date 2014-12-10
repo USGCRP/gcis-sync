@@ -11,3 +11,4 @@ contributors :
          - /organization/institute-numerical-mathematics
 exterms :
     - /cmip3/model/INM-CM3.0
+    - /esg/model/inmcm3_0

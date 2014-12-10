@@ -20,3 +20,4 @@ contributors :
          - /organization/national-center-atmospheric-research
 exterms :
     - /cmip3/model/CCSM3
+    - /esg/model/ncar_ccsm3_0

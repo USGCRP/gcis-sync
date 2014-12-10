@@ -13,3 +13,4 @@ contributors :
         - /organization/institute-kma
 exterms :
     - /cmip3/model/ECHO-G
+    - /esg/model/miub_echo_g

@@ -17,27 +17,27 @@ my $ua  = Mojo::UserAgent->new();
 our $data_archive = '/organization/physical-oceanography-distributed-active-archive-center';
 
 our $map = {
-    identifier  =>  sub { my $dom = shift; my $id = lc $dom->shortName->text; 
+    identifier  =>  sub { my $dom = shift; my $id = lc $dom->at('shortName')->text; 
                           $id =~ tr[ .][-];
                           return "nasa-podaac-$id" unless $id =~ /^podaac/;
                           return "nasa-$id";
                         },
-    name        =>  sub { my $dom = shift; $dom->title->text;         },
+    name        =>  sub { my $dom = shift; $dom->at('title')->text;         },
     description =>  sub { my $dom = shift; join "\n", $dom->at('content')->text;  },
     description_attribution => sub { shift->at('link[title="Dataset Information"]')->attr('href');  },
-    native_id   =>  sub { my $dom = shift; $dom->shortName->text;     },
+    native_id   =>  sub { my $dom = shift; $dom->at('shortName')->text;     },
     url         =>  sub { my $dom = shift; $dom->at('link[title="Dataset Information"]')->attr('href'); },
     lon_min     =>  sub { my $dom = shift; my $w = $dom->at('where') or return undef;
-                                           [ split / /, $w->Envelope->lowerCorner->text ]->[0]; },
+                                           [ split / /, $w->at('Envelope lowerCorner')->text ]->[0]; },
     lat_min     =>  sub { my $dom = shift; my $w = $dom->at('where') or return undef;
-                                           [ split / /, $w->Envelope->lowerCorner->text ]->[1]; },
+                                           [ split / /, $w->at('Envelope lowerCorner')->text ]->[1]; },
     lon_max     =>  sub { my $dom = shift; my $w = $dom->at('where') or return undef;
-                                           [ split / /, $w->Envelope->upperCorner->text ]->[0]; },
+                                           [ split / /, $w->at('Envelope upperCorner')->text ]->[0]; },
     lat_max     =>  sub { my $dom = shift; my $w = $dom->at('where') or return undef;
-                                           [ split / /, $w->Envelope->upperCorner->text ]->[1]; },
+                                           [ split / /, $w->at('Envelope upperCorner')->text ]->[1]; },
     start_time  =>  sub { my $start = shift->at('start') or return undef;  return iso_date($start->text) },
     end_time    =>  sub { my $end   = shift->at('end')   or return undef;  return iso_date($end->text)   },
-    release_dt  =>  sub { iso_date(shift->updated->text);                                                },
+    release_dt  =>  sub { iso_date(shift->at('updated')->text);                                          },
 };
 
 sub sync {
@@ -76,7 +76,7 @@ sub sync {
             );
             die "bad gcid $dataset_gcid" if $dataset_gcid =~ / /;
             next if $gcid_regex && $dataset_gcid !~ /$gcid_regex/;
-            my $alternate_id = $entry->id->text;
+            my $alternate_id = $entry->at("id")->text;
             $s->lookup_or_create_gcid(
                 lexicon => 'podaac', context => 'datasetId', term => $alternate_id,
                 gcid => $dataset_gcid, dry_run => $dry_run,
@@ -146,12 +146,12 @@ sub _assign_instrument_instances {
   $meta->find('podaac\:datasetSource')->each( sub {
       my $e = shift;
       push @sources, {
-            platform   => $e->sourceShortName->text,
-            platform_long   => $e->sourceLongName->text,
-            platform_desc => $e->sourceDescription->text,
-            instrument => $e->sensorShortName->text,
-            instrument_long => $e->sensorLongName->text,
-            instrument_desc => $e->sensorDescription->text,
+            platform   => $e->at('sourceShortName')->text,
+            platform_long   => $e->at('sourceLongName')->text,
+            platform_desc => $e->at('sourceDescription')->text,
+            instrument => $e->at('sensorShortName')->text,
+            instrument_long => $e->at('sensorLongName')->text,
+            instrument_desc => $e->at('sensorDescription')->text,
         };
     });
   for my $source (@sources) {
@@ -203,10 +203,12 @@ sub _assign_instrument_instances {
 sub _assign_files {
     my $s = shift;
     my ($gcid, $meta, $dry_run ) = @_;
-    my ($thumb) = $meta->feed->entry->link->grep(sub { $_[0]->attr('title') =~ /thumbnail/i; }) or return;
-    my $file_url = $thumb->attr('href') or return;
-    my ($info) = $meta->feed->entry->link->grep(sub { $_[0]->attr('title') =~ /dataset information/i; }) or return;
-    my $info_url = $thumb->attr('href');
+    my $thumb = $meta->children('feed entry link')->grep(sub { $_[0]->attr('title') =~ /thumbnail/i; });
+    return unless $thumb->first;
+    my $file_url = $thumb->first->attr('href') or return;
+    my $info = $meta->children('feed entry link')->grep(sub { $_[0]->attr('title') =~ /dataset information/i; });
+    return unless $info->first;
+    my $info_url = $info->first->attr('href');
     debug "adding file $file_url";
     $s->gcis->add_file_url($gcid => {
         file_url       => $file_url,

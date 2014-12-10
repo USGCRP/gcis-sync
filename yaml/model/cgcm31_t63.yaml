@@ -12,3 +12,4 @@ contributors :
          - /organization/canadian-centre-climate-modelling-analysis
 exterms :
     - /cmip3/model/CGCM3.1(T63)
+    - /esg/model/cccma_cgcm3_1_t63
