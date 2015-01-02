@@ -20,8 +20,7 @@ record :
           http://www.lasg.ac.cn/FGOALS/ArticleShow2.asp?BigClass=Models%20Documentation&ArticleID=4224
 contributors :
     contributor :
-   - /organization/chinese-academy-sciences-institute-atmospheric-physics
-    contributor :
-   - /organization/state-key-laboratory-numerical-modeling-atmospheric-sciences-geophysical-fluid-dynamics
+          - /organization/chinese-academy-sciences-institute-atmospheric-physics
+          - /organization/state-key-laboratory-numerical-modeling-atmospheric-sciences-geophysical-fluid-dynamics
 exterms :
    - /cmip3/model/FGOALS-g1.0
