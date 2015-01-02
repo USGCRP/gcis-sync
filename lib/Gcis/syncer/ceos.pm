@@ -43,8 +43,8 @@ sub _get_missions {
     my $res1 = $tx1->res or die "fail: ".$tx1->error->{message};
     my %params = %defaultParams;
     $params{ddlMissionStatus} = "All";
-    $params{__VIEWSTATE} = $res1->dom->find('#__VIEWSTATE')->attr('value');
-    $params{__EVENTVALIDATION} = $res1->dom->find('#__EVENTVALIDATION')->attr('value');
+    $params{__VIEWSTATE} = $res1->dom->at('#__VIEWSTATE')->attr('value');
+    $params{__EVENTVALIDATION} = $res1->dom->at('#__EVENTVALIDATION')->attr('value');
     debug "POST to $platform_src";
     my $tx = $ua->post($platform_src => form => \%params);
     my $res = $tx->res or die "error posting to $platform_src: ".$tx->error->{message};
@@ -71,8 +71,8 @@ sub _get_instruments {
     my %params = %defaultParams;
     $params{'ddlMissionStatus' } = 'All';
     $params{'ddlInstrumentStatus' } = 'All';
-    $params{__VIEWSTATE} = $res1->dom->find('#__VIEWSTATE')->attr('value');
-    $params{__EVENTVALIDATION} = $res1->dom->find('#__EVENTVALIDATION')->attr('value');
+    $params{__VIEWSTATE} = $res1->dom->at('#__VIEWSTATE')->attr('value');
+    $params{__EVENTVALIDATION} = $res1->dom->at('#__EVENTVALIDATION')->attr('value');
     debug "POST to $instrument_src";
     my $tx = $ua->post($instrument_src => form => \%params);
     my $res = $tx->res or die "error posting to $instrument_src: ".$tx->error->{message};
