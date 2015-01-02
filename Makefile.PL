@@ -9,6 +9,7 @@ WriteMakefile(
                 'Gcis::Client'      => 0,
                 'Smart::Comments'   => 0,
                 'DateTime::Format::ISO8601' => 0,
+                'Path::Class' => 0,
                },
   test      => {TESTS => 't/*.t'}
 );
