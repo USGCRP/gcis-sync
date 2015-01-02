@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+cd `dirname $0`
+export PERLBREW_ROOT=/opt/perl5
+export PERLBREW_HOME=/opt/perl5/common
+source $PERLBREW_ROOT/etc/bashrc
+
+../sync.pl --syncer=ceos --log_file=/var/local/log/sync.log --url=https://data-stage.globalchange.gov
+../sync.pl --syncer=podaac --log_file=/var/local/log/sync.log --url=https://data-stage.globalchange.gov
+
+
+
