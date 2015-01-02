@@ -1,7 +1,8 @@
 =head1 NAME
 
 gcis-sync : synchronize data in the GCIS with various sources, such as dx.doi.org, CEOS, PO.DAAC.
-L<Build Status|https://secure.travis-ci.org/USGCRP/gcis-sync.png>
+
+=for HTML <p><img src="https://secure.travis-ci.org/USGCRP/gcis-sync.png" alt="Build status" /></p>
 
 =head1 DESCRIPTION
 
