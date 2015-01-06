@@ -336,14 +336,22 @@ sub _associate_instruments {
         push @instruments, $identifier;
     }
     return \@instruments if $dry_run;
+    my $existing = $s->gcis->get("/platform/$platform");
+    my %existing_instruments = map { $_->{identifier} => 1 } @{ $existing->{instruments} || [] };
     for my $instrument (@instruments) {
+        delete $existing_instruments{$instrument};
         unless ($s->gcis->get("/instrument/$instrument")) {
             error "Instrument $instrument not found (platform $platform)";
-            return;
+            next;
         }
 
         $s->gcis->post("/platform/rel/$platform",
           {add => {instrument_identifier => $instrument}});
+    }
+    for my $extra (keys %existing_instruments) {
+        info "removing extra instrument $extra from $platform";
+        $s->gcis->post("/platform/rel/$platform",
+          {del => {instrument_identifier => $extra}});
     }
     return \@instruments;
 }
