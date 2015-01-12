@@ -10,7 +10,7 @@ use DateTime;
 
 use v5.14;
 our $src = "http://mercury.ornl.gov/oai/provider";
-our $records_per_request = 3;
+our $records_per_request = 20;
 our %params = (
   verb           => 'ListRecords',
   metadataPrefix => 'oai_dif',
@@ -74,12 +74,11 @@ sub sync {
 
     my $per_page    = 10;
     my $more        = 1;
-    my $start_index = 1;
     my $url         = Mojo::URL->new($src)->query(%params);
     my $count       = 0;
 
-    REQUEST :
-    while ($more) {
+    while ($count < $limit) {
+        ### percent done : 100 * $count/$limit
         $more = 0;
         info "getting $url";
         my $tx = $ua->get($url->query([ %params,
@@ -91,8 +90,8 @@ sub sync {
             return;
         }
         #debug "got ".$res->to_string;
-        for my $entry ($res->dom->find('record')->each) {  ### Processing===[%]       done
-            last REQUEST if $limit && ++$count > $limit;
+        for my $entry ($res->dom->find('record')->each) {
+            last if $limit && ++$count > $limit;
             $more = 1;
             my %gcis_info = $s->_extract_gcis($entry);
             debug Dumper(\%gcis_info);
@@ -128,7 +127,7 @@ sub sync {
                 };
             }
         }
-        $start_index += $per_page;
+        last unless $more;
     }
 
     $s->{stats} = \%stats;
