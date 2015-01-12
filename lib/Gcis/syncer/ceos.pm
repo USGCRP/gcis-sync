@@ -43,8 +43,8 @@ sub _get_missions {
     my $res1 = $tx1->res or die "fail: ".$tx1->error->{message};
     my %params = %defaultParams;
     $params{ddlMissionStatus} = "All";
-    $params{__VIEWSTATE} = $res1->dom->find('#__VIEWSTATE')->attr('value');
-    $params{__EVENTVALIDATION} = $res1->dom->find('#__EVENTVALIDATION')->attr('value');
+    $params{__VIEWSTATE} = $res1->dom->at('#__VIEWSTATE')->attr('value');
+    $params{__EVENTVALIDATION} = $res1->dom->at('#__EVENTVALIDATION')->attr('value');
     debug "POST to $platform_src";
     my $tx = $ua->post($platform_src => form => \%params);
     my $res = $tx->res or die "error posting to $platform_src: ".$tx->error->{message};
@@ -71,8 +71,8 @@ sub _get_instruments {
     my %params = %defaultParams;
     $params{'ddlMissionStatus' } = 'All';
     $params{'ddlInstrumentStatus' } = 'All';
-    $params{__VIEWSTATE} = $res1->dom->find('#__VIEWSTATE')->attr('value');
-    $params{__EVENTVALIDATION} = $res1->dom->find('#__EVENTVALIDATION')->attr('value');
+    $params{__VIEWSTATE} = $res1->dom->at('#__VIEWSTATE')->attr('value');
+    $params{__EVENTVALIDATION} = $res1->dom->at('#__EVENTVALIDATION')->attr('value');
     debug "POST to $instrument_src";
     my $tx = $ua->post($instrument_src => form => \%params);
     my $res = $tx->res or die "error posting to $instrument_src: ".$tx->error->{message};
@@ -336,14 +336,22 @@ sub _associate_instruments {
         push @instruments, $identifier;
     }
     return \@instruments if $dry_run;
+    my $existing = $s->gcis->get("/platform/$platform");
+    my %existing_instruments = map { $_->{identifier} => 1 } @{ $existing->{instruments} || [] };
     for my $instrument (@instruments) {
+        delete $existing_instruments{$instrument};
         unless ($s->gcis->get("/instrument/$instrument")) {
             error "Instrument $instrument not found (platform $platform)";
-            return;
+            next;
         }
 
         $s->gcis->post("/platform/rel/$platform",
           {add => {instrument_identifier => $instrument}});
+    }
+    for my $extra (keys %existing_instruments) {
+        info "removing extra instrument $extra from $platform";
+        $s->gcis->post("/platform/rel/$platform",
+          {del => {instrument_identifier => $extra}});
     }
     return \@instruments;
 }

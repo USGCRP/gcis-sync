@@ -45,6 +45,7 @@ sub sync {
         } else {
             bless $s, $plugin;
         }
+        debug "file : $file";
         $s->_ingest_file($file, $gcid, $dry_run);
     } );
 }
@@ -214,8 +215,9 @@ sub _exclude_file {
     my $gcid_regex = shift;
     my $record = shift;
     return 0 unless $gcid_regex;
-    my $test_gcid = '/' . $file->dir->basename .'/', $record->{identifier} // $file->basename;
+    my $test_gcid = '/' . $file->dir->basename .'/' . ($record->{identifier} // $file->basename);
     # yes exclude, if we don't match.
+    debug "testing gcid $test_gcid against $gcid_regex";
     return 1 if $test_gcid !~ /^$gcid_regex/;
     return 0;
 }

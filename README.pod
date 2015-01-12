@@ -2,6 +2,8 @@
 
 gcis-sync : synchronize data in the GCIS with various sources, such as dx.doi.org, CEOS, PO.DAAC.
 
+=for HTML <a href="http://travis-ci.org/USGCRP/gcis-sync"><img src="https://secure.travis-ci.org/USGCRP/gcis-sync.png" alt="Build status" /></a>
+
 =head1 DESCRIPTION
 
 sync.pl pulls data from a variety of sources, and ingests the data into the L<GCIS|http://data.globalchange.gov>.
