@@ -808,13 +808,13 @@ sub compare {
     for my $k (keys %a_objs) {
         next if $b_objs{$k};
         $v->[$n]->{uri} = $k;
-        $v->[$n]->{_location} = 'dst only';
+        $v->[$n]->{_location} = 'src only';
         $n++;
     }
     for my $k (keys %b_objs) {
         next if $a_objs{$k};
         $v->[$n]->{uri} = $k;
-        $v->[$n]->{_location} = 'src only';
+        $v->[$n]->{_location} = 'dst only';
         $n++;
     }
 
