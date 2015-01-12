@@ -33,16 +33,25 @@ our $map = {
     native_id   =>  sub { shift->at('Entry_ID')->text; }, 
     name        =>  sub { shift->at('Entry_Title')->text;},
     description =>  sub { shift->at('Summary')->text;  },
-    doi         =>  sub { my $doi = shift->at('Data_Set_Citation Other_Citation_Details')->text;
-                          $doi =~ s/doi:// ? $doi : undef },
     description_attribution => sub {
-        my ($first) = shift->find('Related_URL')
-          ->grep(sub { return 0 unless $_->at('Type');
-                       $_->at('Type')->text =~ /view related information/i 
-                   });
-        return undef unless $first && $first->first;
-        $first->first->at('URL')->text;
-    },
+                           shift
+                           ->find('Related_URL')
+                           ->grep( sub { $_->at('Type') && $_->at('Type')->text =~ /view related information/i; })
+                           ->map(at => 'URL')
+                           ->map('text')->join(" ")->to_string;
+                          },
+    url => sub {
+                           shift
+                           ->find('Related_URL')
+                           ->grep( sub { $_->at('Type') && $_->at('Type')->text =~ /get data/i; })
+                           ->map(at => 'URL')
+                           ->map('text')->join(" ")->to_string;
+                          },
+    doi         =>  sub { shift->find('Data_Set_Citation Other_Citation_Details')
+                          ->map('text')
+                          ->map(sub { s/doi://r })
+                          ->join
+                          ->to_string },
     lat_min      => sub { shift->at('Southernmost_Latitude')->text },
     lat_max      => sub { shift->at('Northernmost_Latitude')->text },
     lon_min      => sub { shift->at('Westernmost_Longitude')->text },
@@ -51,11 +60,6 @@ our $map = {
     stop_time    => sub { shift->at('Temporal_Coverage Stop_Date')->text },
     release_dt   => sub { iso_date(shift->at('Dataset_Release_Date')->text) },
     access_dt    => sub { DateTime->now->iso8601 },
-
-    #url         =>  sub { my $dom = shift; $dom->at('link[title="Dataset Information"]')->attr('href'); },
-    #start_time  =>  sub { my $start = shift->at('start') or return undef;  return iso_date($start->text) },
-    #end_time    =>  sub { my $end   = shift->at('end')   or return undef;  return iso_date($end->text)   },
-    #release_dt  =>  sub { iso_date(shift->at('updated')->text);                                          },
 };
 
 sub sync {
