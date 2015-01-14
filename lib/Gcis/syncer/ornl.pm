@@ -78,7 +78,7 @@ sub sync {
     my $count       = 0;
 
     while ($count < $limit) {
-        ### percent done : 100 * $count/$limit
+        ### percent done : sprintf('%02d',100 * $count/$limit)
         $more = 0;
         info "getting $url";
         my $tx = $ua->get($url->query([ %params,
@@ -125,6 +125,7 @@ sub sync {
                     error "Error posting to $url : ".$c->error;
                     error "Gcis info : ".Dumper(\%gcis_info);
                 };
+                $s->_assign_contributors($dataset_gcid, \%gcis_info, $dry_run );
             }
         }
         last unless $more;
@@ -141,5 +142,16 @@ sub _extract_gcis {
     my %new = map { $_ => $map->{$_}->( $dom ) } keys %$map;
     # debug "extracting $new{identifier} : $new{native_id}";
     return %new;
+}
+
+sub _assign_contributors {
+    my $s = shift;
+    my ($gcid, $info, $dry_run ) = @_;
+    return if $dry_run;
+    my $contribs_url = $gcid =~ s[dataset/][dataset/contributors/]r;
+    $s->gcis->post($contribs_url => {
+                organization_identifier => $data_archive,
+                role => 'data_archive'
+        }) or error $s->gcis->error;
 }
 
