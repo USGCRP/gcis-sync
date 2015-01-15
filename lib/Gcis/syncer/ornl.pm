@@ -10,7 +10,7 @@ use DateTime;
 
 use v5.14;
 our $src = "http://mercury.ornl.gov/oai/provider";
-our $records_per_request = 20;
+our $records_per_request = 100;
 our %params = (
   verb           => 'ListRecords',
   metadataPrefix => 'oai_dif',
@@ -28,7 +28,7 @@ our $map = {
                           $id =~ s[oai:mercury\.ornl\.gov:][];
                           $id =~ s/_/-/;
                           die "bad id : $id" unless $id =~ m[^ornldaac-\d+$];
-                          return $id;
+                          return "nasa-$id";
                         },
     native_id   =>  sub { shift->at('Entry_ID')->text; }, 
     name        =>  sub { shift->at('Entry_Title')->text;},
@@ -96,22 +96,20 @@ sub sync {
             my %gcis_info = $s->_extract_gcis($entry);
             debug Dumper(\%gcis_info);
 
+            my $oai_identifier = $entry->at('header identifier')->text;
             my $dataset_gcid = $s->lookup_or_create_gcid(
                   lexicon   => 'ornl',
                   context => 'dataset',
-                  term    => $gcis_info{identifier},
+            # e.g. oai:mercury.ornl.gov:ornldaac_831
+                  term    => $oai_identifier,
                   gcid    => "/dataset/$gcis_info{identifier}",
                   dry_run => $dry_run,
                   restrict => $gcid_regex,
             );
             die "bad gcid $dataset_gcid" if $dataset_gcid =~ / /;
             next if $gcid_regex && $dataset_gcid !~ /$gcid_regex/;
-##            my $alternate_id = $entry->at("id")->text;
-##            $s->lookup_or_create_gcid(
-##                lexicon => 'ornl', context => 'datasetId', term => $alternate_id,
-##                gcid => $dataset_gcid, dry_run => $dry_run,
-##            );
-##
+
+
             debug "entry #$count : $dataset_gcid";
 
             # insert or update
@@ -127,6 +125,7 @@ sub sync {
                 };
                 $s->_assign_contributors($dataset_gcid, \%gcis_info, $dry_run );
             }
+            $s->_assign_instrument_instances(\%gcis_info, $entry, $dry_run );
         }
         last unless $more;
     }
@@ -153,5 +152,51 @@ sub _assign_contributors {
                 organization_identifier => $data_archive,
                 role => 'data_archive'
         }) or error $s->gcis->error;
+}
+
+sub _assign_instrument_instances {
+    my $s = shift;
+    my ($gcis_info, $dom, $dry_run) = @_;
+
+    # Sample :
+    #    <Sensor_Name>
+    #        <Short_Name />
+    #        <Long_Name>STILLING WELL </Long_Name>
+    #    </Sensor_Name>
+    #    <Source_Name>
+    #        <Short_Name />
+    #        <Long_Name>SURFACE WATER WEIR </Long_Name>
+    #    </Source_Name>
+
+    info $s->gcis->url."/dataset/$gcis_info->{identifier}";
+
+    my @sensors = $dom->find('Sensor_Name Long_Name')->map('text')->each;
+    my @sources = $dom->find('Source_Name Long_Name')->map('text')->each;
+    unless (@sensors==@sources) {
+        error "count mismatch for sensors and sources in $gcis_info->{identifier} : ".@sensors." vs ".@sources;
+        return;
+    }
+    my @instances;
+    my %seen;
+    while (@sensors && (my ($i,$p) = (shift @sensors, shift @sources))) {
+        next if $seen{$i}{$p}++;
+        info qq[{ source : "$p", sensor : "$i" }];
+        push @instances, { sensor => $i, source => $p};
+    }
+    for my $instance (@instances) {
+        my ($platform_gcid, $instrument_gcid);
+        if (my $found = $s->gcis->get("/lexicon/ornl/find/Source/$instance->{source}")) {
+            $platform_gcid = $found->{uri};
+        } else {
+            debug "no platform id for source : $instance->{source}";
+        }
+        if (my $found = $s->gcis->get("/lexicon/ornl/find/Sensor/$instance->{sensor}")) {
+            $instrument_gcid = $found->{uri};
+        } else {
+            debug "no instrument id for sensor : $instance->{sensor}";
+        }
+        next unless $platform_gcid && $instrument_gcid;
+        info "found sensor/source : $instance->{sensor}/$instance->{source}";
+    }
 }
 
