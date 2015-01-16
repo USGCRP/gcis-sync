@@ -156,6 +156,9 @@ sub _assign_contributors {
 
 sub _assign_instrument_instances {
     my $s = shift;
+    state %source_seen;
+    state %sensor_seen;
+
     my ($gcis_info, $dom, $dry_run) = @_;
 
     # Sample :
@@ -180,7 +183,9 @@ sub _assign_instrument_instances {
     my %seen;
     while (@sensors && (my ($i,$p) = (shift @sensors, shift @sources))) {
         next if $seen{$i}{$p}++;
-        info qq[{ source : "$p", sensor : "$i" }];
+        info "new source : $p" unless $source_seen{$p}++;
+        info "new sensor : $i" unless $sensor_seen{$i}++;
+        debug qq[{ source : "$p", sensor : "$i" }];
         push @instances, { sensor => $i, source => $p};
     }
     for my $instance (@instances) {
@@ -193,10 +198,27 @@ sub _assign_instrument_instances {
         if (my $found = $s->gcis->get("/lexicon/ornl/find/Sensor/$instance->{sensor}")) {
             $instrument_gcid = $found->{uri};
         } else {
-            debug "no instrument id for sensor : $instance->{sensor}";
+            if ($platform_gcid) {
+                info "no instrument id for sensor : $instance->{sensor} on ".$s->gcis->url.$platform_gcid;
+            } else {
+                debug "no instrument id for sensor : $instance->{sensor}";
+            }
         }
         next unless $platform_gcid && $instrument_gcid;
         info "found sensor/source : $instance->{sensor}/$instance->{source}";
+        my $instance_gcid = join '', $platform_gcid, $instrument_gcid;
+        my $instance = $s->gcis->get($instance_gcid) or do {
+            info "did not find instance $instance_gcid";
+            next;
+        };
+        next if $dry_run;
+        $s->gcis->post("/dataset/rel/$gcis_info->{identifier}" => {
+                add_instrument_measurement => {
+                    platform_identifier => $platform_gcid =~ s[/platform/][]r,
+                    instrument_identifier => $instrument_gcid =~ s[/instrument/][]r,
+                }
+            } );
+
     }
 }
 
