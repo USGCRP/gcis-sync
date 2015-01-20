@@ -1,7 +1,7 @@
 ---
 record :
     project_identifier: cmip3
-    identifier: csiro-mk3_0
+    identifier: csiro-mk3_5
     name: CSIRO Mark 3.5
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/CSIRO-Mk3.5.htm
     website : ~
