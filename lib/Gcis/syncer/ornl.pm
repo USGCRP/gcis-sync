@@ -65,7 +65,7 @@ our $map = {
 sub sync {
     my $s = shift;
     my %a = @_;
-    my $limit   = $a{limit};
+    my $limit   = $a{limit} || 999999;
     my $dry_run = $a{dry_run};
     my $gcid_regex = $a{gcid};
     my $c       = $s->{gcis} or die "no client";
