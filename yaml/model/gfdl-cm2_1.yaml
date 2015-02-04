@@ -2,7 +2,7 @@
 record :
     project_identifier: cmip3
     identifier: gfdl-cm2_1
-    name: Geophysical Fluid Dynamics Laboratory Coupled Model, Version 2.0
+    name: Geophysical Fluid Dynamics Laboratory Coupled Model, Version 2.1
     reference_url: http://www-pcmdi.llnl.gov/ipcc/model_documentation/GFDL-cm2.htm
     website : http://nomads.gfdl.noaa.gov/CM2.X/references/
     description: 
