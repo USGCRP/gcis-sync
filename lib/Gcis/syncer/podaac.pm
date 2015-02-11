@@ -6,6 +6,7 @@ use Gcis::syncer::util qw/:log iso_date pretty_id/;
 use Smart::Comments;
 use Mojo::UserAgent;
 use Data::Dumper;
+use DateTime;
 
 use v5.14;
 our $src = "http://podaac.jpl.nasa.gov/ws/search/dataset/";
@@ -38,6 +39,7 @@ our $map = {
     start_time  =>  sub { my $start = shift->at('start') or return undef;  return iso_date($start->text) },
     end_time    =>  sub { my $end   = shift->at('end')   or return undef;  return iso_date($end->text)   },
     release_dt  =>  sub { iso_date(shift->at('updated')->text);                                          },
+    access_dt   =>  sub { DateTime->now()->iso8601(); },
 };
 
 sub sync {

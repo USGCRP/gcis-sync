@@ -12,6 +12,7 @@ sub warning($) { warn "@_"; Gcis::syncer->logger->warn(@_); }
 
 sub iso_date {
     my $dt = shift or return undef;
+    $dt .= '-01-01' if $dt =~ /^\d{4}$/;
     my $parsed = DateTime::Format::ISO8601->parse_datetime($dt) or return undef;
     return $parsed->iso8601();
 }
