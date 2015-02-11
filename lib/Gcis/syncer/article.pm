@@ -38,8 +38,8 @@ sub _set_year {
     my $year = shift;
     return 0 if $article->{year} eq $year;
     if ($article->{year} == ($year + 1)) {
-      info "article year is one more than authority - no update";
-      return 1;
+        info "article year is one more than authority - no update";
+        return 1;
     } 
     info "old year : $article->{year}";
     info "new year : $year";
@@ -57,6 +57,26 @@ sub _set_vol {
     return 1;
 }
 
+sub _set_issn {
+    my $s = shift;
+    my $journal = shift;
+    my $issns = shift;
+    for my $issn (@$issns) {
+        return 0 if $journal->{online_issn} == $issn;
+        return 0 if $journal->{print_issn}  == $issn;
+    }
+    my $v = "";
+    $v = "$journal->{online_issn} (online)" if $journal->{online_issn};
+    if ($journal->{print_issn}) {
+        $v .= ", " if $v;
+        $v .= "$journal->{print_issn} (print)" if $journal->{print_issn};
+    }
+    info "old issn : $v";
+    info "new issn : @$issns[0]";
+    $journal->{online_issn} = @$issns[0];
+    return 1;
+}
+
 # return 1 if changed
 # return 2 if very different
 sub _set_journal_title {
@@ -71,6 +91,21 @@ sub _set_journal_title {
     return $return_value;
 }
 
+sub _fix_issn {
+    my $s = shift;
+    my $issn = shift;
+    my $title = shift;
+    my %issn_map = (
+        "Eos, Transactions American Geophysical Union"    => {"0096-3941" => "2324-9250"}, 
+        "Journal of Geophysical Research: Oceans"         => {"0148-0227" => "2169-9291"}, 
+        "Journal of Geophysical Research: Biogeosciences" => {"0148-0227" => "2169-8961"}, 
+        "Journal of Geophysical Research: Earth Surface"  => {"0148-0227" => "2169-9011"}, 
+        "c" => {"d" => "e"}, 
+        );
+    return $issn unless my $fix_issn = $issn_map{$title}{$issn};
+    return $fix_issn;
+}
+
 $|=1;
 sub sync {
     my $s       = shift;
@@ -82,12 +117,9 @@ sub sync {
     my $c = $s->{gcis} or die "no client";
 
     my $d = Gcis::Client->new->accept("application/vnd.citationstyles.csl+json;q=0.5")
-             ->url("http://dx.doi.org");
-    my $r = Gcis::Client->new->accept("application/json;q=0.5")
-             ->url("http://api.crossref.org");
+              ->url("http://api.crossref.org");
 
     $d->logger($c->logger);
-    $r->logger($c->logger);
     my @articles;
     if ($gcid) {
        @articles = ( $c->get($gcid) );
@@ -107,8 +139,12 @@ sub sync {
             debug "no doi for ".Dumper($article);
             next;
         };
-        my $crossref = $d->get("/$doi") or do {
+        my $cref = $d->get("/works/$doi") or do {
             warning "No info from crossref for $doi";
+            next;
+        };
+        my $crossref = $cref->{message} or do {
+            warning "No content in crossref for $doi";
             next;
         };
         my $jou = $c->get("/journal/$article->{journal_identifier}") or 
@@ -120,7 +156,7 @@ sub sync {
         my $how = "";
 
         if ($crossref->{title}) {
-            if (my $title_change = $s->_set_title($article, $crossref->{title})) {
+            if (my $title_change = $s->_set_title($article, $crossref->{title}[0])) {
                 $changed{article} = 1;
                 if ($title_change == 1) {
                     $stats{title_changed_touch_up}++;
@@ -161,12 +197,20 @@ sub sync {
         }
 
         {
-            my $issn = $crossref->{ISSN}[0];
+            my $issn = $crossref->{ISSN};
             unless ($issn) {
                 warning "No ISSN in crossref for $doi";
                 next;
             }
-            my $crossref_journal = $r->get("/journals/issn:$issn");
+            @$issn[0] = $s->_fix_issn(@$issn[0], $journal->{title});
+            say "issn ".@$issn[0];
+            if (my $issn_change = $s->_set_issn($journal, $issn)) {
+               $changed{journal} = 1;
+               $stats{issn_changed}++;
+               $how .= ", " if $how;
+               $how .= "issn change";
+            }
+            my $crossref_journal = $d->get("/journals/issn:@$issn[0]");
             unless ($crossref_journal) {
                 warning "No journal in crossref for $doi";
                 next;
@@ -195,6 +239,7 @@ sub sync {
                 info "$uri : update ($how)";
             } else {
                 info "no change for $doi";
+                $stats{skip}++;
             }
             next;
         }
