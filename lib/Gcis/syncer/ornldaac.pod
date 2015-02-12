@@ -1,0 +1,45 @@
+=head1 SYNOPSIS
+
+   ./sync.pl --syncer=ornldaac --url=https://data-stage.globalchange.gov
+
+=head1 DESCRIPTION
+
+The ORNLDAAC syncer pulls dataset information from the L<Oak Ridge National Laboratory DAAC|http://daac.ornl.gov>,
+using the public L<Open Archives Initiative - Protocol for Metadata Harvesting (OAI-PMH)|http://mercury.ornl.gov/oai/provider>.
+
+It pulls metadata for datasets, and associates platforms and instruments with GCIS platforms and instruments.
+It also associates lists the ORNLDAAC as the archive for each dataset (using the L<GCID|http://data.globalchange.gov/organization/oak-ridge-national-laboratory-distributed-active-archive-center> for ORNLDAAC).
+
+=head1 Lexicons
+
+The ORNLDAAC syncer uses the L<ORNL|http://data.globalchange.gov/lexicon/ORNL> lexicon to
+translate identifiers within ORNLDAAC to GCIDs.
+
+=head1 Resources
+
+=head1 Datasets
+
+=head2 Scope
+
+Metadata for all of the ORNLDAAC datasets are pulled into the GCIS.
+
+=head2 Identifiers
+
+The identifier for a ORNLDAAC dataset is formed by using the shortName field from the ORNLDAAC
+metadata.  The short names are prepended with "nasa-ORNLDAAC" (some already start with "ORNLDAAC",
+in which case only "nasa" is prepended).
+
+=head2 Fields
+
+The following fields are populated based on the ORNLDAAC fields :
+
+    name, description, description_attribution, native_id, url, lat/lon + min/max, start/end time, release_dt
+
+The platform and sensor names are looked up in the GCIS lexicon table to find
+GCIDs for platforms and instruments respectively.  If there is a match, the dataset
+is associated with the GCIS platform and instrument.
+
+=cut
+
+
+
