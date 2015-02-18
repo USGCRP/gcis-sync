@@ -21,13 +21,11 @@ translate identifiers within ORNLDAAC to GCIDs.
 
 =head2 Scope
 
-Metadata for all of the ORNLDAAC datasets are pulled into the GCIS.
+Metadata for all of the ORNL DAAC datasets are pulled into the GCIS.
 
 =head2 Identifiers
 
-The identifier for a ORNLDAAC dataset is formed by using the shortName field from the ORNLDAAC
-metadata.  The short names are prepended with "nasa-ORNLDAAC" (some already start with "ORNLDAAC",
-in which case only "nasa" is prepended).
+The identifier for a ORNLDAAC dataset is formed by using the identifiers provided by ORNL DAAC  The short names are prepended with "nasa-ornldaac" 
 
 =head2 Fields
 
