@@ -13,6 +13,7 @@ use Gcis::syncer::echo;
 use Gcis::syncer::podaac;
 use Gcis::syncer::ornl;
 use Gcis::syncer::ceos;
+use Gcis::syncer::nsidc;
 use Gcis::syncer::yaml;
 
 my @syncers = qw/article echo podaac ceos/;
@@ -28,6 +29,7 @@ GetOptions(
   'gcid=s'      => \(my $gcid),
   'syncers=s'   => \(my $syncer),
   'audit_note=s' => \(my $audit_note = "$0 @ARGV\n"),
+  'from_file=s'  => \(my $from_file),
 );
 
 pod2usage(-msg => "missing url", -verbose => 1) unless $url;
@@ -54,6 +56,7 @@ sub main {
             dry_run => $dry_run,
             limit => $limit,
             gcid => $gcid,
+            from_file => $from_file,
         );
         $stats{$which} = $obj->stats || {};
     }
