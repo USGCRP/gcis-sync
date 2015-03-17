@@ -87,7 +87,7 @@ sub sync {
         my %gcis_info = $s->_extract_gcis($entry);
         next unless $gcis_info{doi};
         ++$count;
-        debug Dumper(\%gcis_info);
+        # debug Dumper(\%gcis_info);
 
         #my $oai_identifier = $entry->at('header identifier')->text;
         #my $dataset_gcid = $s->lookup_or_create_gcid(
@@ -102,8 +102,7 @@ sub sync {
         my $identifier = $gcis_info{identifier} or die "no identifier : ".Dumper(\%gcis_info);
         my $dataset_gcid = "/dataset/$gcis_info{identifier}";
         next if $gcid_regex && $dataset_gcid !~ /$gcid_regex/;
-
-        debug "entry #$count : $dataset_gcid";
+        debug "$dataset_gcid";
 
         # insert or update
         my $existing = $c->get($dataset_gcid);
@@ -118,7 +117,7 @@ sub sync {
             };
             $s->_assign_contributors($dataset_gcid, \%gcis_info, $dry_run );
         }
-        #$s->_assign_instrument_instances(\%gcis_info, $entry, $dry_run );
+        $s->_assign_instrument_instances(\%gcis_info, $entry, $dry_run );
     }
 
     $s->{stats} = \%stats;
@@ -164,52 +163,42 @@ sub _assign_instrument_instances {
 
     info $s->gcis->url."/dataset/$gcis_info->{identifier}";
 
-    my @sensors = $dom->find('Sensor_Name Long_Name')->map('text')->each;
-    my @sources = $dom->find('Source_Name Long_Name')->map('text')->each;
-    unless (@sensors==@sources) {
-        error "count mismatch for sensors and sources in $gcis_info->{identifier} : ".@sensors." vs ".@sources;
-        return;
-    }
+    my @sensors = $dom->find('Sensor_Name Short_Name')->map('text')->each;
+    my @sources = $dom->find('Source_Name Short_Name')->map('text')->each;
+    my @long_sensors = $dom->find('Sensor_Name Long_Name')->map('text')->each;
+    my @long_sources = $dom->find('Source_Name Long_Name')->map('text')->each;
+
+    debug "sources : ".join " , ",@sources;
+    debug "sources : ".join " , ",@long_sources;
+    debug "sensors : ".join " , ",@sensors;
+    debug "sensors : ".join " , ",@long_sensors;
+
+    # Look for any existing combinations, no way to tell what goes with what.
+
     my @instances;
-    my %seen;
-    while (@sensors && (my ($i,$p) = (shift @sensors, shift @sources))) {
-        next if $seen{$i}{$p}++;
-        info "new source : $p" unless $source_seen{$p}++;
-        info "new sensor : $i" unless $sensor_seen{$i}++;
-        debug qq[{ source : "$p", sensor : "$i" }];
-        push @instances, { sensor => $i, source => $p};
-    }
-    for my $instance (@instances) {
-        my ($platform_gcid, $instrument_gcid);
-        if (my $found = $s->gcis->get("/lexicon/nsidc/find/Source/$instance->{source}")) {
-            $platform_gcid = $found->{uri};
-        } else {
-            debug "no platform id for source : $instance->{source}";
-        }
-        if (my $found = $s->gcis->get("/lexicon/nsidc/find/Sensor/$instance->{sensor}")) {
-            $instrument_gcid = $found->{uri};
-        } else {
-            if ($platform_gcid) {
-                info "no instrument id for sensor : $instance->{sensor} on ".$s->gcis->url.$platform_gcid;
-            } else {
-                debug "no instrument id for sensor : $instance->{sensor}";
-            }
-        }
-        next unless $platform_gcid && $instrument_gcid;
-        info "found sensor/source : $instance->{sensor}/$instance->{source}";
-        my $instance_gcid = join '', $platform_gcid, $instrument_gcid;
-        my $instance = $s->gcis->get($instance_gcid) or do {
-            info "did not find instance $instance_gcid";
+    for my $i (@sensors) {
+        my $instrument = $s->gcis->get("/lexicon/nsidc/find/Sensor/$i") or do {
+            info "instrument not found : $i";
             next;
         };
-        next if $dry_run;
-        $s->gcis->post("/dataset/rel/$gcis_info->{identifier}" => {
-                add_instrument_measurement => {
-                    platform_identifier => $platform_gcid =~ s[/platform/][]r,
-                    instrument_identifier => $instrument_gcid =~ s[/instrument/][]r,
-                }
-            } );
-
+        for my $p (@sources) {
+            my $platform = $s->gcis->get("/lexicon/nsidc/find/Source/$p") or do {
+                info "platform not found : $p";
+                next;
+            };
+            my $instance = "/platform/$platform->{identifier}/instrument/$instrument->{identifier}";
+            $s->gcis->get($instance) or do {
+                info "did not find instance $instance";
+                next;
+            };
+            next if $dry_run;
+            $s->gcis->post("/dataset/rel/$gcis_info->{identifier}" => {
+                    add_instrument_measurement => {
+                        platform_identifier => $platform->{identifier} =~ s[/platform/][]r,
+                        instrument_identifier => $instrument->{identifier}=~ s[/instrument/][]r,
+                    }
+                } );
+        }
     }
 }
 
