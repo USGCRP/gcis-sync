@@ -3,7 +3,7 @@ use base 'Gcis::syncer';
 
 use Gcis::Client;
 use Gcis::syncer::util qw/:log iso_date pretty_id/;
-use Smart::Comments;
+use Smart::Comments -ENV;
 use Mojo::UserAgent;
 use Data::Dumper;
 use DateTime;

@@ -2,7 +2,7 @@ package Gcis::syncer::echo;
 use Gcis::Client;
 use base 'Gcis::syncer';
 use Gcis::syncer::util qw/:log iso_date pretty_id/;
-use Smart::Comments;
+use Smart::Comments -ENV;
 use JSON::XS;
 use Mojo::UserAgent;
 use IO::Uncompress::Unzip qw/unzip $UnzipError/;

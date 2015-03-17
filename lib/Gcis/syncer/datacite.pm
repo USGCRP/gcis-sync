@@ -1,7 +1,7 @@
 package Gcis::syncer::datacite;
 use base 'Gcis::syncer';
 
-use Smart::Comments;
+use Smart::Comments -ENV;
 use Mojo::UserAgent;
 use Gcis::syncer::util qw/:log pretty_id/;
 use Data::Dumper;

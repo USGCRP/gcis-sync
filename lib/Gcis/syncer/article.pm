@@ -2,7 +2,7 @@ package Gcis::syncer::article;
 
 use Text::Levenshtein qw/distance/;
 use Gcis::Client;
-use Smart::Comments;
+use Smart::Comments -ENV;
 use Data::Dumper;
 use base 'Gcis::syncer';
 use Gcis::syncer::util qw/:log/;
