@@ -151,15 +151,17 @@ sub _assign_instrument_instances {
 
     my ($gcis_info, $dom, $dry_run) = @_;
 
-    # Sample :
-    #    <Sensor_Name>
-    #        <Short_Name />
-    #        <Long_Name>STILLING WELL </Long_Name>
-    #    </Sensor_Name>
-    #    <Source_Name>
-    #        <Short_Name />
-    #        <Long_Name>SURFACE WATER WEIR </Long_Name>
-    #    </Source_Name>
+    # NSIDC provides multiple sources and sensors and no indication of which goes with which, so
+    # we try all possible combinations to search for existing instrument instances.
+    #
+    #<Source_Name>
+    #   <Short_Name>DMSP 5D-2/F11</Short_Name>
+    #   <Long_Name>Defense Meteorological Satellite Program-F11</Long_Name>
+    #</Source_Name>
+    #<Sensor_Name>
+    #   <Short_Name>SSMIS</Short_Name>
+    #   <Long_Name>Special Sensor Microwave Imager/Sounder</Long_Name>
+    #</Sensor_Name>
 
     info $s->gcis->url."/dataset/$gcis_info->{identifier}";
 
