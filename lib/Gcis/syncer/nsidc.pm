@@ -12,10 +12,7 @@ use Path::Class qw/file/;
 use v5.14;
 our $src = "http://nsidc.org/api/dataset/2/oai?verb=ListRecords&metadataPrefix=dif";
 
-# http://nsidc.org/api/dataset/metadata/g02135.dif
-# and get the list of IDs from someplace
-
-my $ua  = Mojo::UserAgent->new()->inactivity_timeout(60 * 10);
+my $ua  = Mojo::UserAgent->new()->inactivity_timeout(60 * 20);
 
 our $data_archive = '/organization/national-snow-ice-data-center';
 
@@ -89,16 +86,15 @@ sub sync {
         ++$count;
         # debug Dumper(\%gcis_info);
 
-        #my $oai_identifier = $entry->at('header identifier')->text;
-        #my $dataset_gcid = $s->lookup_or_create_gcid(
-        #      lexicon   => 'nsidc',
-        #      context => 'dataset',
-        #      term    => $oai_identifier,
-        #      gcid    => "/dataset/$gcis_info{identifier}",
-        #      dry_run => $dry_run,
-        #      restrict => $gcid_regex,
-        #);
-        #die "bad gcid $dataset_gcid" if $dataset_gcid =~ / /;
+        my $oai_identifier = $entry->at('header identifier')->text;
+        my $dataset_gcid = $s->lookup_or_create_gcid(
+              lexicon   => 'nsidc',
+              context => 'dataset',
+              term    => $oai_identifier,
+              gcid    => "/dataset/$gcis_info{identifier}",
+              dry_run => $dry_run,
+              restrict => $gcid_regex,
+        );
         my $identifier = $gcis_info{identifier} or die "no identifier : ".Dumper(\%gcis_info);
         my $dataset_gcid = "/dataset/$gcis_info{identifier}";
         next if $gcid_regex && $dataset_gcid !~ /$gcid_regex/;
@@ -170,10 +166,10 @@ sub _assign_instrument_instances {
     my @long_sensors = $dom->find('Sensor_Name Long_Name')->map('text')->each;
     my @long_sources = $dom->find('Source_Name Long_Name')->map('text')->each;
 
-    debug "sources : ".join " , ",@sources;
-    debug "sources : ".join " , ",@long_sources;
-    debug "sensors : ".join " , ",@sensors;
-    debug "sensors : ".join " , ",@long_sensors;
+    return unless @sources && @sensors;
+
+    debug "sources : ".(join ", ",@sources).( @long_sources ? "(".(join", ", @long_sources).")" : "");
+    debug "sensors : ".(join ", ",@sensors).( @long_sensors ? "(".(join", ", @long_sensors).")" : "");
 
     # Look for any existing combinations, no way to tell what goes with what.
 
