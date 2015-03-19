@@ -1,4 +1,22 @@
-#!/bin/sh -e
+#!/bin/bash -e
+
+log=/var/local/log/do-sync.log
+
+buhbye() {
+    rv=$?
+    if [ "$rv" -ne "0" ]; then
+        exec 1>&6 6>&-
+        echo "$0 exited with status code $rv.  Log ($log) : "
+        tail $log
+    fi
+    exit $rv
+}
+
+exec 6>&1
+exec >> $log 2>&1
+date
+
+trap "buhbye" EXIT
 
 cd `dirname $0`
 export PERLBREW_ROOT=/opt/perl5
