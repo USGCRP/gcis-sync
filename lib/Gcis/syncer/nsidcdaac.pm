@@ -27,7 +27,7 @@ sub _txt($) {
 our $map = {
     identifier  =>  sub { my $dom = shift;
                           my $id = lc $dom->at('Entry_ID')->text;
-                          $id = "nsidc-$id" unless $id =~ /^nsidc/;
+                          $id = "nsidcdaac-$id" unless $id =~ /^nsidc/;
                           $id = "nasa-$id";
                           return $id;
                         },
