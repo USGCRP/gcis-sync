@@ -64,7 +64,7 @@ sub sync {
     my $count       = 0;
     my $dom;
 
-    debug "starting nsidc daac";
+    debug "starting nsidcdaac";
 
     if ($from_file) {
         $dom = Mojo::DOM->new(scalar file($from_file)->slurp);
