@@ -14,7 +14,7 @@ our $src = "http://nsidc.org/api/dataset/2/oai?verb=ListRecords&metadataPrefix=d
 
 my $ua  = Mojo::UserAgent->new()->inactivity_timeout(60 * 20);
 
-our $data_archive = '/organization/national-snow-ice-data-center';
+our $data_archive = '/organization/national-snow-ice-data-center-distributed-active-archive-center';
 
 sub _txt($) {
     my $selector = shift;
@@ -64,7 +64,7 @@ sub sync {
     my $count       = 0;
     my $dom;
 
-    debug "starting nsidc";
+    debug "starting nsidc daac";
 
     if ($from_file) {
         $dom = Mojo::DOM->new(scalar file($from_file)->slurp);
@@ -147,7 +147,7 @@ sub _assign_instrument_instances {
 
     my ($gcis_info, $dom, $dry_run) = @_;
 
-    # NSIDC provides multiple sources and sensors and no indication of which goes with which, so
+    # NSIDC DAAC provides multiple sources and sensors and no indication of which goes with which, so
     # we try all possible combinations to search for existing instrument instances.
     #
     #<Source_Name>
