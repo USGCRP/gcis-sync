@@ -1,4 +1,4 @@
-package Gcis::syncer::nsidc;
+package Gcis::syncer::nsidcdaac;
 use base 'Gcis::syncer';
 
 use Gcis::Client;
@@ -73,7 +73,7 @@ sub sync {
         my $tx = $ua->get($src);
         my $res = $tx->success or die "$src : ".$tx->error->{message};
         if (my $error = $res->dom->at('error')) {
-            info "nsidc error : ".$error->text;
+            info "nsidcdaac error : ".$error->text;
             return;
         }
         $dom = $res->dom;
