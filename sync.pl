@@ -13,7 +13,7 @@ use Gcis::syncer::echo;
 use Gcis::syncer::podaac;
 use Gcis::syncer::ornl;
 use Gcis::syncer::ceos;
-use Gcis::syncer::nsidc;
+use Gcis::syncer::nsidcdaac;
 use Gcis::syncer::yaml;
 
 my @syncers = qw/article echo podaac ceos/;
