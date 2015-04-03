@@ -16,7 +16,7 @@ use Gcis::syncer::ceos;
 use Gcis::syncer::nsidcdaac;
 use Gcis::syncer::yaml;
 
-my @syncers = qw/article echo podaac ceos/;
+my @syncers = qw/article echo podaac ceos nsidcdaac/;
 
 binmode STDOUT, ':encoding(utf8)';
 
