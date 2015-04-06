@@ -1,4 +1,4 @@
-package Gcis::syncer::ornl;
+package Gcis::syncer::ornldaac;
 use base 'Gcis::syncer';
 
 use Gcis::Client;
@@ -20,7 +20,7 @@ our %params = (
 
 my $ua  = Mojo::UserAgent->new();
 
-our $data_archive = '/organization/oak-ridge-national-laboratory';
+our $data_archive = '/organization/oak-ridge-national-laboratory-distributed-active-archive-center';
 
 our $map = {
     identifier  =>  sub { my $dom = shift;
@@ -70,7 +70,7 @@ sub sync {
     my $gcid_regex = $a{gcid};
     my $c       = $s->{gcis} or die "no client";
     my %stats;
-    debug "starting ornl";
+    debug "starting ornldaac";
 
     my $per_page    = 10;
     my $more        = 1;
@@ -86,7 +86,7 @@ sub sync {
             ]));
         my $res = $tx->success or die "$url : ".$tx->error->{message};
         if (my $error = $res->dom->at('error')) {
-            info "ornl error : ".$error->text;
+            info "ornldaac error : ".$error->text;
             return;
         }
         #debug "got ".$res->to_string;
