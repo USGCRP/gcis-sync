@@ -1,4 +1,4 @@
-package Gcis::syncer::nsidc;
+package Gcis::syncer::nsidcdaac;
 use base 'Gcis::syncer';
 
 use Gcis::Client;
@@ -14,7 +14,7 @@ our $src = "http://nsidc.org/api/dataset/2/oai?verb=ListRecords&metadataPrefix=d
 
 my $ua  = Mojo::UserAgent->new()->inactivity_timeout(60 * 20);
 
-our $data_archive = '/organization/national-snow-ice-data-center';
+our $data_archive = '/organization/national-snow-ice-data-center-distributed-active-archive-center';
 
 sub _txt($) {
     my $selector = shift;
@@ -27,7 +27,7 @@ sub _txt($) {
 our $map = {
     identifier  =>  sub { my $dom = shift;
                           my $id = lc $dom->at('Entry_ID')->text;
-                          $id = "nsidc-$id" unless $id =~ /^nsidc/;
+                          $id = "nsidcdaac-$id" unless $id =~ /^nsidc/;
                           $id = "nasa-$id";
                           return $id;
                         },
@@ -64,7 +64,7 @@ sub sync {
     my $count       = 0;
     my $dom;
 
-    debug "starting nsidc";
+    debug "starting nsidcdaac";
 
     if ($from_file) {
         $dom = Mojo::DOM->new(scalar file($from_file)->slurp);
@@ -73,7 +73,7 @@ sub sync {
         my $tx = $ua->get($src);
         my $res = $tx->success or die "$src : ".$tx->error->{message};
         if (my $error = $res->dom->at('error')) {
-            info "nsidc error : ".$error->text;
+            info "nsidcdaac error : ".$error->text;
             return;
         }
         $dom = $res->dom;
@@ -147,7 +147,7 @@ sub _assign_instrument_instances {
 
     my ($gcis_info, $dom, $dry_run) = @_;
 
-    # NSIDC provides multiple sources and sensors and no indication of which goes with which, so
+    # NSIDC DAAC provides multiple sources and sensors and no indication of which goes with which, so
     # we try all possible combinations to search for existing instrument instances.
     #
     #<Source_Name>
