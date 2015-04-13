@@ -25,6 +25,7 @@ source $PERLBREW_ROOT/etc/bashrc
 
 ../sync.pl --syncer=ceos --log_file=/var/local/log/sync.log --url=https://data-stage.globalchange.gov
 ../sync.pl --syncer=podaac --log_file=/var/local/log/sync.log --url=https://data-stage.globalchange.gov
-
+../sync.pl --syncer=nsidcdaac --log_file=/var/local/log/sync.log --url=https://data-stage.globalchange.gov
+../sync.pl --syncer=ornldaac --log_file=/var/local/log/sync.log --url=https://data-stage.globalchange.gov
 
 
