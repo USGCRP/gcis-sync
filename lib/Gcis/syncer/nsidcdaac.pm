@@ -94,9 +94,11 @@ sub sync {
               gcid    => "/dataset/$gcis_info{identifier}",
               dry_run => $dry_run,
               restrict => $gcid_regex,
-        );
+        ) or do {
+            error "unable to make dataset gcid for $gcis_info{identifier}";
+            next;
+        };
         my $identifier = $gcis_info{identifier} or die "no identifier : ".Dumper(\%gcis_info);
-        my $dataset_gcid = "/dataset/$gcis_info{identifier}";
         next if $gcid_regex && $dataset_gcid !~ /$gcid_regex/;
         debug "$dataset_gcid";
 

@@ -7,6 +7,7 @@ use Smart::Comments -ENV;
 use Mojo::UserAgent;
 use Data::Dumper;
 use DateTime;
+use Path::Class qw/file/;
 
 use v5.14;
 our $src = "http://podaac.jpl.nasa.gov/ws/search/dataset/";
@@ -48,6 +49,7 @@ sub sync {
     my $dry_run = $a{dry_run};
     my $gcid_regex = $a{gcid};
     my $c       = $s->{gcis} or die "no client";
+    my $from_file = $a{from_file};
     my %stats;
 
     my $per_page    = 400;
@@ -59,11 +61,18 @@ sub sync {
     REQUEST :
     while ($more) {
         $more = 0;
-        my $tx = $ua->get($url->query([ startIndex => $start_index ]));
-        my $res = $tx->success or die "$url : ".$tx->error->{message};
-        for my $entry ($res->dom->find('entry')->each) {  ### Processing===[%]       done
+        my $dom;
+        if ($from_file) {
+            $dom = Mojo::DOM->new(scalar file($from_file)->slurp);
+        } else {
+            my $tx = $ua->get($url->query([ startIndex => $start_index ]));
+            my $res = $tx->success or die "$url : ".$tx->error->{message};
+            $dom = $res->dom;
+        }
+
+        for my $entry ($dom->find('entry')->each) {  ### Processing===[%]       done
             last REQUEST if $limit && $count > $limit;
-            $more = 1;
+            $more = 1 unless $from_file;
             my %gcis_info = $s->_extract_gcis($entry);
 
             # Store mappings to both shortName and id

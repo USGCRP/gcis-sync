@@ -64,7 +64,8 @@ sub main {
     for my $k (keys %stats) {
         next unless ref $stats{$k};
         my $line = join ' ', map "$_=$stats{$k}{$_}", keys %{ $stats{$k} };
-        say "$k : $line ";
+        $line = 'no changes' unless $line && length($line);
+        say "stats for $k : $line ";
         $gcis->logger->info("stats : $k : $line");
     }
 }
