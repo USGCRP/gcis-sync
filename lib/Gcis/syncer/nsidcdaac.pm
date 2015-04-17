@@ -104,24 +104,26 @@ sub sync {
         ++$count;
 
         my $oai_identifier = $entry->at('header identifier')->text;
-        my $dataset_gcid = $s->lookup_or_create_gcid(
+        my $dataset_gcid = "/dataset/$gcis_info{identifier}";
+        $s->lookup_or_create_gcid(
               lexicon   => 'nsidc',
               context => 'dataset',
               term    => $oai_identifier,
-              gcid    => "/dataset/$gcis_info{identifier}",
+              gcid    => $dataset_gcid,
               dry_run => $dry_run,
               restrict => $gcid_regex,
+              force_create => 1,
         ) or do {
             error "unable to make dataset gcid for $gcis_info{identifier}";
             next;
         };
         my $identifier = $gcis_info{identifier} or die "no identifier : ".Dumper(\%gcis_info);
         next if $gcid_regex && $dataset_gcid !~ /$gcid_regex/;
-        debug "$dataset_gcid";
 
         # insert or update
         my $existing = $c->get($dataset_gcid) || $c->get("/dataset/lookup/$gcis_info{doi}");
         my $url = $existing ? $existing->{uri} : "/dataset";
+        debug "$dataset_gcid";
         $stats{ ($existing ? "updated" : "created") }++;
         debug "sending to $url";
         unless ($dry_run) {

@@ -36,25 +36,27 @@ sub lookup_gcid {
 sub lookup_or_create_gcid {
     my $s = shift;
     my %args = @_;
-    my ($lexicon,$context,$term,$gcid,$restrict) =
-        @args{qw/lexicon context term gcid restrict/};
+    my ($lexicon,$context,$term,$gcid,$restrict,$force_create) =
+        @args{qw/lexicon context term gcid restrict force_create/};
     
-    # debug "looking for /lexicon/$lexicon/find/$context/$term";
-    $s->gcis->ua->max_redirects(0);
-    my $existing = $s->gcis->get("/lexicon/$lexicon/find/$context/$term");
-    $s->gcis->ua->max_redirects(5);
-    if ($existing) {
-        my $gcid = $existing->{gcid};
-        die "found invalid gcid" if $gcid =~ / /;
+    unless ($force_create) {
+        # debug "looking for /lexicon/$lexicon/find/$context/$term";
+        $s->gcis->ua->max_redirects(0);
+        my $existing = $s->gcis->get("/lexicon/$lexicon/find/$context/$term");
+        $s->gcis->ua->max_redirects(5);
+        if ($existing) {
+            my $gcid = $existing->{gcid};
+            die "found invalid gcid" if $gcid =~ / /;
+            return if $restrict && $gcid !~ /$restrict/;
+            return $gcid;
+        }
+
+        # Make a new one.
+        $gcid =~ m[^/] or die "invalid gcid $gcid";
+
         return if $restrict && $gcid !~ /$restrict/;
-        return $gcid;
+        return $gcid if $args{dry_run};
     }
-
-    # Make a new one.
-    $gcid =~ m[^/] or die "invalid gcid $gcid";
-
-    return if $restrict && $gcid !~ /$restrict/;
-    return $gcid if $args{dry_run};
 
     debug "Making a new term $lexicon, $context, $term -> $gcid";
     $s->gcis->post("/lexicon/$lexicon/term/new",
