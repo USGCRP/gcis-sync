@@ -9,7 +9,7 @@ use Data::Dumper;
 use DateTime;
 
 use v5.14;
-our $src = "http://mercury.ornl.gov/oai/provider";
+our $src = "http://mercury-ops2.ornl.gov/oai/provider";
 our $records_per_request = 100;
 our %params = (
   verb           => 'ListRecords',
