@@ -24,11 +24,21 @@ sub _txt($) {
     }
 }
 
+our %id_prefix_map = (
+    '10.5067' => 'nasa-nsidcdaac',
+    '10.7265' => 'nsidc',
+);
+
 our $map = {
     identifier  =>  sub { my $dom = shift;
-                          my $id = lc $dom->at('Entry_ID')->text;
-                          $id = "nsidcdaac-$id" unless $id =~ /^nsidc/;
-                          $id = "nasa-$id";
+                          my $doi = $dom->at('Data_Set_Citation > Dataset_DOI') or return undef;
+                          $doi = $doi->text;
+                          $doi =~ s/^doi://;
+                          my ($prefix, $rest) = split q[/], $doi;
+                          my $id_prefix = $id_prefix_map{$prefix} or return undef;
+                          my $id_base = lc $dom->at('Entry_ID')->text;
+                          $id_base =~ s/nsidc-//;
+                          my $id = "$id_prefix-$id_base";
                           return $id;
                         },
     native_id   =>  sub { shift->at('Entry_ID')->text; }, 
@@ -42,7 +52,13 @@ our $map = {
                            ->map('text')->join(" ")->to_string;
                           },
     url          => _txt 'Data_Set_Citation > Online_Resource',
-    doi          => _txt 'Data_Set_Citation > Dataset_DOI',
+    doi         => sub {
+                      my $dom = shift;
+                      my $doi = $dom->at('Data_Set_Citation > Dataset_DOI') or return undef;
+                      $doi = $doi->text;
+                      $doi =~ s/^doi://;
+                      $doi;
+                  },
     lat_min      => _txt 'Southernmost_Latitude',
     lat_max      => _txt 'Northernmost_Latitude',
     lon_min      => _txt 'Westernmost_Longitude',
@@ -82,9 +98,10 @@ sub sync {
     for my $entry ($dom->find('record')->each) {
         last if $limit && $count >= $limit;
         my %gcis_info = $s->_extract_gcis($entry);
+        # debug Dumper(\%gcis_info);
+        next unless $gcis_info{identifier};
         next unless $gcis_info{doi};
         ++$count;
-        # debug Dumper(\%gcis_info);
 
         my $oai_identifier = $entry->at('header identifier')->text;
         my $dataset_gcid = $s->lookup_or_create_gcid(
@@ -103,9 +120,8 @@ sub sync {
         debug "$dataset_gcid";
 
         # insert or update
-        my $existing = $c->get($dataset_gcid);
-        my $url = $dataset_gcid;
-        $url = "/dataset" unless $existing;
+        my $existing = $c->get($dataset_gcid) || $c->get("/dataset/lookup/$gcis_info{doi}");
+        my $url = $existing ? $existing->{uri} : "/dataset";
         $stats{ ($existing ? "updated" : "created") }++;
         debug "sending to $url";
         unless ($dry_run) {
