@@ -25,7 +25,7 @@ our $data_archive = '/organization/oak-ridge-national-laboratory-distributed-act
 our $map = {
     identifier  =>  sub { my $dom = shift;
                           my $id = $dom->at('header identifier')->text; 
-                          $id =~ s[oai:mercury\.ornl\.gov:][];
+                          $id =~ s[oai:[^:]+:][];
                           $id =~ s/_/-/;
                           die "bad id : $id" unless $id =~ m[^ornldaac-\d+$];
                           return "nasa-$id";
