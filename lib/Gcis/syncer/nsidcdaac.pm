@@ -45,11 +45,10 @@ our $map = {
     name        =>  sub { shift->at('Entry_Title')->text;},
     description =>  sub { shift->at('Summary > Abstract')->text;  },
     description_attribution => sub {
-                           shift
-                           ->find('Related_URL')
+                          my $found = shift->find('Related_URL')
                            ->grep( sub { $_->at('Type') && $_->at('Type')->text =~ /view related information/i; })
-                           ->map(at => 'URL')
-                           ->map('text')->join(" ")->to_string;
+                           ->first or return undef;
+                          return $found->at('URL')->text;
                           },
     url          => _txt 'Data_Set_Citation > Online_Resource',
     doi         => sub {
