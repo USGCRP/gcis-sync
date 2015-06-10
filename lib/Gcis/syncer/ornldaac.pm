@@ -59,7 +59,6 @@ our $map = {
     start_time   => sub { shift->at('Temporal_Coverage Start_Date')->text },
     end_time     => sub { shift->at('Temporal_Coverage Stop_Date')->text },
     release_dt   => sub { iso_date(shift->at('Dataset_Release_Date')->text) },
-    access_dt    => sub { DateTime->now->iso8601 },
 };
 
 sub sync {
