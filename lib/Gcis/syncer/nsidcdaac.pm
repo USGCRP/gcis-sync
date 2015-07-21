@@ -14,7 +14,6 @@ our $src = "http://nsidc.org/api/dataset/2/oai?verb=ListRecords&metadataPrefix=d
 
 my $ua  = Mojo::UserAgent->new()->inactivity_timeout(60 * 20);
 
-our $data_archive = '/organization/national-snow-ice-data-center-distributed-active-archive-center';
 
 sub _txt($) {
     my $selector = shift;
@@ -29,12 +28,23 @@ our %id_prefix_map = (
     '10.7265' => 'nsidc',
 );
 
+our %contributor_prefix_map = (
+    '10.5067' => '/organization/national-snow-ice-data-center-distributed-active-archive-center',
+    '10.7265' => '/organization/national-snow-ice-data-center',
+);
+
+sub doi_prefix {
+    my $doi = shift;
+    my ($prefix, $rest) = split q[/], $doi;
+    return $prefix;
+}
+
 our $map = {
     identifier  =>  sub { my $dom = shift;
                           my $doi = $dom->at('Data_Set_Citation > Dataset_DOI') or return undef;
                           $doi = $doi->text;
                           $doi =~ s/^doi://;
-                          my ($prefix, $rest) = split q[/], $doi;
+                          my $prefix = doi_prefix($doi);
                           my $id_prefix = $id_prefix_map{$prefix} or return undef;
                           my $id_base = lc $dom->at('Entry_ID')->text;
                           $id_base =~ s/nsidc-//;
@@ -74,9 +84,9 @@ sub sync {
     my $dry_run = $a{dry_run};
     my $gcid_regex = $a{gcid};
     my $from_file = $a{from_file};
-    my $c       = $s->{gcis} or die "no client";
+    my $c = $s->{gcis} or die "no client";
     my %stats;
-    my $count       = 0;
+    my $count = 0;
     my $dom;
 
     debug "starting nsidcdaac";
@@ -153,9 +163,11 @@ sub _assign_contributors {
     my ($gcid, $info, $dry_run ) = @_;
     return if $dry_run;
     my $contribs_url = $gcid =~ s[dataset/][dataset/contributors/]r;
+    my $data_archive = $contributor_prefix_map{ doi_prefix($info->{doi}) } or die "no contributor for $info->{doi}";
     $s->gcis->post($contribs_url => {
                 organization_identifier => $data_archive,
-                role => 'data_archive'
+                role => 'data_archive',
+                remove_others_with_role => 'data_archive',
         }) or error $s->gcis->error;
 }
 
